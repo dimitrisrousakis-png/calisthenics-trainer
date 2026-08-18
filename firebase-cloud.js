@@ -1,4 +1,4 @@
-import firebaseConfig from './firebase-config.js';
+import firebaseConfig from './firebase-config.js?v=8';
 
 const SDK_VERSION = '12.17.1';
 const SDK_BASE = `https://www.gstatic.com/firebasejs/${SDK_VERSION}`;
