@@ -258,17 +258,16 @@ html[data-theme="dark"] .pill.accent{background:var(--accent-soft);color:#8ee0ca
     </div>
     <div class="field">
       <label for="gatePassword">Password</label>
-      <input id="gatePassword" type="password" autocomplete="current-password" placeholder="Password" />
+      <input id="gatePassword" type="password" autocomplete="current-password" minlength="6" placeholder="Password" />
     </div>
 
     <div class="login-actions">
-      <button class="btn" onclick="gateSignIn()">Sign In</button>
-      <button class="btn secondary" onclick="gateCreateAccount()">Create Account</button>
-      <button class="btn ghost" onclick="gateResetPassword()">Reset Password</button>
+      <button id="gateSignInBtn" class="btn" onclick="gateSignIn()">Sign In</button>
+      <button id="gateCreateBtn" class="btn secondary" onclick="gateCreateAccount()">Create Account</button>
+      <button id="gateResetBtn" class="btn ghost" onclick="gateResetPassword()">Reset Password</button>
     </div>
 
-    <div id="gateStatus" class="gate-status">Checking sign-in status…</div>
-    <div class="muted" style="font-size:.68rem;margin-top:4px">Build v11</div>
+    <div id="gateStatus" class="gate-status" aria-live="polite">Checking sign-in status…</div>
 
     <div class="gate-security">
       The website address is public, but the trainer interface is locked until Firebase confirms a signed-in account. Workout data remains protected by Firebase Authentication and Firestore Security Rules.
@@ -953,28 +952,52 @@ function gateCredentials(){
   };
 }
 
+function setGateBusy(isBusy){
+  const ids = ['gateSignInBtn','gateCreateBtn','gateResetBtn'];
+  ids.forEach(id=>{
+    const btn = document.getElementById(id);
+    if(btn) btn.disabled = !!isBusy;
+  });
+}
+
 async function gateSignIn(){
   const {email,password}=gateCredentials();
   if(!email || !password){ gateSetStatus('Enter your email and password.', true); return; }
   if(!window.trainerCloud){ gateSetStatus('Firebase is still loading. Try again in a moment.', true); return; }
+  setGateBusy(true);
   gateSetStatus('Signing in…');
-  await window.trainerCloud.signIn(email,password);
+  try{
+    await window.trainerCloud.signIn(email,password);
+  }finally{
+    setGateBusy(false);
+  }
 }
 
 async function gateCreateAccount(){
   const {email,password}=gateCredentials();
   if(!email || !password){ gateSetStatus('Enter an email and password first.', true); return; }
+  if(password.length < 6){ gateSetStatus('Password must be at least 6 characters.', true); return; }
   if(!window.trainerCloud){ gateSetStatus('Firebase is still loading. Try again in a moment.', true); return; }
+  setGateBusy(true);
   gateSetStatus('Creating account…');
-  await window.trainerCloud.createAccount(email,password);
+  try{
+    await window.trainerCloud.createAccount(email,password);
+  }finally{
+    setGateBusy(false);
+  }
 }
 
 async function gateResetPassword(){
   const email=(document.getElementById('gateEmail')?.value || '').trim();
   if(!email){ gateSetStatus('Enter your email address first.', true); return; }
   if(!window.trainerCloud){ gateSetStatus('Firebase is still loading. Try again in a moment.', true); return; }
+  setGateBusy(true);
   gateSetStatus('Sending password-reset email…');
-  await window.trainerCloud.resetPassword(email);
+  try{
+    await window.trainerCloud.resetPassword(email);
+  }finally{
+    setGateBusy(false);
+  }
 }
 
 document.addEventListener('keydown', event=>{
@@ -1037,7 +1060,7 @@ function cloudSetMessage(message='', tone='normal'){
   el.style.color = tone === 'error' ? 'var(--danger)' : '';
 }
 
-window.__trainerBuild = 'v11';
+window.__trainerBuild = 'v12';
 
 window.setCloudUIState = function(state={}){
   const configured = !!state.configured;
@@ -2010,7 +2033,7 @@ window.addEventListener('appinstalled', () => {
 
 async function installPWA(){
   if(!deferredInstallPrompt){
-    alert('Installation is not currently offered by this browser. Make sure you opened the HTTPS Netlify URL in Chrome, not a local file.');
+    alert('Installation is not currently offered by this browser. Make sure you opened the live HTTPS app in Chrome, not a local file.');
     return;
   }
   deferredInstallPrompt.prompt();
@@ -2029,6 +2052,6 @@ if('serviceWorker' in navigator){
 }
 </script>
 
-<script type="module" src="./firebase-cloud.js?v=11"></script>
+<script type="module" src="./firebase-cloud.js?v=12"></script>
 </body>
 </html>

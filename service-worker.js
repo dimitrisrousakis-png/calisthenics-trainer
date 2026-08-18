@@ -1,4 +1,4 @@
-const CACHE_NAME = 'calisthenics-trainer-v11';
+const CACHE_NAME = 'calisthenics-trainer-v12';
 
 const APP_SHELL = [
   './',
