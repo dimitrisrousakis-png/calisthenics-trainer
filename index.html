@@ -1,0 +1,1995 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<title>Calisthenics Trainer</title>
+<meta id="themeColorMeta" name="theme-color" content="#1f6f5f" />
+<meta name="application-name" content="Calisthenics Trainer" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="default" />
+<meta name="apple-mobile-web-app-title" content="Calisthenics Trainer" />
+<link rel="manifest" href="./manifest.webmanifest" />
+<link rel="icon" type="image/png" sizes="64x64" href="./icons/icon-64.png" />
+<link rel="apple-touch-icon" sizes="180x180" href="./icons/icon-180.png" />
+<style>
+:root{
+  --bg:#f6f7fb;
+  --card:#ffffff;
+  --text:#16181d;
+  --muted:#6b7280;
+  --line:#e5e7eb;
+  --accent:#1f6f5f;
+  --accent-soft:#e9f5f1;
+  --danger:#b42318;
+  --shadow:0 8px 28px rgba(15,23,42,.08);
+  --radius:18px;
+}
+*{box-sizing:border-box}
+body{
+  margin:0;
+  font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  background:var(--bg);
+  color:var(--text);
+}
+button,input,select{font:inherit}
+button{cursor:pointer}
+.app{max-width:900px;margin:0 auto;min-height:100vh;padding-bottom:92px}
+header{
+  position:sticky;top:0;z-index:20;
+  background:rgba(246,247,251,.92);
+  backdrop-filter:blur(12px);
+  padding:18px 18px 12px;
+  border-bottom:1px solid rgba(229,231,235,.8);
+}
+.brand{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.brand h1{font-size:1.25rem;margin:0}
+.brand .sub{font-size:.84rem;color:var(--muted);margin-top:3px}
+main{padding:18px}
+.page{display:none}
+.page.active{display:block}
+.card{
+  background:var(--card);border:1px solid var(--line);border-radius:var(--radius);
+  padding:16px;box-shadow:var(--shadow);margin-bottom:14px;
+}
+.hero{
+  padding:20px;
+  background:linear-gradient(135deg,#ffffff 0%,#edf8f4 100%);
+}
+.hero h2{margin:0 0 8px;font-size:1.45rem}
+.hero p{margin:0;color:var(--muted);line-height:1.5}
+.row{display:flex;gap:10px;align-items:center}
+.row.wrap{flex-wrap:wrap}
+.row.between{justify-content:space-between}
+.grid{display:grid;gap:12px}
+.grid.two{grid-template-columns:repeat(2,minmax(0,1fr))}
+.grid.three{grid-template-columns:repeat(3,minmax(0,1fr))}
+label{font-size:.88rem;font-weight:700;display:block;margin-bottom:6px}
+input,select{
+  width:100%;padding:11px 12px;border:1px solid var(--line);border-radius:12px;background:#fff;color:var(--text);
+}
+.field{margin-bottom:13px}
+.btn{
+  border:none;border-radius:12px;padding:11px 14px;font-weight:800;
+  background:var(--accent);color:#fff;
+}
+.btn.secondary{background:#eef2f7;color:#1f2937}
+.btn.ghost{background:transparent;color:var(--accent);border:1px solid #cfe4de}
+.btn.danger{background:#fff0ef;color:var(--danger);border:1px solid #ffd5d1}
+.btn.small{padding:8px 10px;font-size:.84rem}
+.btn.block{width:100%}
+.section-title{display:flex;justify-content:space-between;align-items:center;gap:10px;margin:4px 0 12px}
+.section-title h2,.section-title h3{margin:0}
+.muted{color:var(--muted)}
+.pill{
+  display:inline-flex;align-items:center;gap:6px;border-radius:999px;padding:6px 9px;
+  background:#f1f5f9;color:#475569;font-size:.78rem;font-weight:700;
+}
+.pill.accent{background:var(--accent-soft);color:var(--accent)}
+.session-card h3{margin:0 0 5px}
+.session-card .meta{font-size:.86rem;color:var(--muted);margin-bottom:12px}
+.session-actions{display:flex;gap:8px;flex-wrap:wrap}
+.exercise-picker{
+  display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;
+}
+.exercise-chip{
+  border:1px solid var(--line);background:#fff;padding:10px;border-radius:12px;text-align:left;
+}
+.exercise-chip.selected{border-color:var(--accent);background:var(--accent-soft)}
+.builder-item{
+  border:1px solid var(--line);border-radius:14px;padding:12px;margin-bottom:10px;background:#fafafa;
+}
+.builder-head{display:flex;justify-content:space-between;align-items:flex-start;gap:8px;margin-bottom:10px}
+.builder-title{font-weight:800}
+.builder-controls{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
+.icon-btn{
+  border:1px solid var(--line);background:#fff;border-radius:10px;padding:7px 9px;
+}
+.library-item h3{margin:0 0 8px}
+.library-item p{margin:8px 0 0;color:#4b5563;line-height:1.5}
+.tags{display:flex;gap:6px;flex-wrap:wrap}
+.nav{
+  position:fixed;left:50%;bottom:0;transform:translateX(-50%);
+  width:min(900px,100%);z-index:30;background:#fff;border-top:1px solid var(--line);
+  display:grid;grid-template-columns:repeat(5,1fr);padding:8px 6px calc(8px + env(safe-area-inset-bottom));
+}
+.nav button{
+  border:none;background:transparent;padding:8px 2px;color:#6b7280;font-size:.73rem;font-weight:700;
+}
+.nav button.active{color:var(--accent)}
+.nav .ico{display:block;font-size:1.2rem;margin-bottom:2px}
+.empty{text-align:center;padding:28px 16px;color:var(--muted)}
+.training-overlay{
+  position:fixed;inset:0;z-index:100;background:#f7f8fb;display:none;overflow:auto;
+}
+.training-overlay.active{display:block}
+.training-shell{max-width:720px;margin:0 auto;min-height:100%;padding:18px 18px 32px}
+.training-top{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.timer-main{font-variant-numeric:tabular-nums;font-size:1.15rem;font-weight:900}
+.training-card{
+  margin-top:18px;background:#fff;border:1px solid var(--line);border-radius:24px;
+  padding:28px 20px;box-shadow:var(--shadow);text-align:center;
+}
+.training-card .eyebrow{text-transform:uppercase;letter-spacing:.09em;color:var(--muted);font-size:.76rem;font-weight:800}
+.training-card h2{font-size:2rem;margin:10px 0 6px}
+.target{font-size:2.5rem;font-weight:950;color:var(--accent);margin:14px 0}
+.description{max-width:520px;margin:0 auto;color:#4b5563;line-height:1.55}
+.progress{height:8px;border-radius:999px;background:#e8edf2;overflow:hidden;margin:16px 0}
+.progress > span{display:block;height:100%;background:var(--accent);width:0%}
+.training-actions{display:grid;grid-template-columns:1fr 2fr 1fr;gap:9px;margin-top:18px}
+.training-actions .btn{padding:14px}
+.countdown{font-size:4rem;font-weight:950;font-variant-numeric:tabular-nums;margin:14px 0}
+.summary-stat{padding:14px;border-radius:14px;background:#f8fafc;text-align:center}
+.summary-stat b{display:block;font-size:1.35rem;margin-top:3px}
+.history-row{display:flex;justify-content:space-between;gap:12px;padding:12px 0;border-bottom:1px solid var(--line)}
+.history-row:last-child{border-bottom:none}
+.notice{
+  padding:12px 14px;border-radius:12px;background:#fff8e8;color:#7a5410;font-size:.86rem;margin-bottom:12px;
+}
+.switch{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:12px 0}
+.switch input{width:auto;transform:scale(1.2)}
+.hidden{display:none!important}
+@media (max-width:640px){
+  .grid.two,.grid.three{grid-template-columns:1fr}
+  .exercise-picker{grid-template-columns:1fr}
+  .builder-controls{grid-template-columns:1fr 1fr}
+  .training-card h2{font-size:1.65rem}
+  .target{font-size:2rem}
+  .training-actions{grid-template-columns:1fr 1.6fr}
+  .training-actions .prev{display:none}
+}
+
+html[data-theme="dark"]{
+  --bg:#101419;
+  --card:#171d23;
+  --text:#f4f7f8;
+  --muted:#9ca8b3;
+  --line:#2a333c;
+  --accent:#65c7ae;
+  --accent-soft:#17382f;
+  --danger:#ff8f86;
+  --shadow:0 8px 28px rgba(0,0,0,.24);
+}
+html[data-theme="dark"] body{background:var(--bg);color:var(--text)}
+html[data-theme="dark"] header{background:rgba(16,20,25,.92);border-bottom-color:var(--line)}
+html[data-theme="dark"] .nav{background:#141a20;border-top-color:var(--line)}
+html[data-theme="dark"] .nav button{color:#9ca8b3}
+html[data-theme="dark"] .nav button.active{color:var(--accent)}
+html[data-theme="dark"] .card,
+html[data-theme="dark"] .training-card{background:var(--card);border-color:var(--line)}
+html[data-theme="dark"] .hero{background:linear-gradient(135deg,#171d23 0%,#17382f 100%)}
+html[data-theme="dark"] input,
+html[data-theme="dark"] select,
+html[data-theme="dark"] .exercise-chip,
+html[data-theme="dark"] .icon-btn{background:#11171c;color:var(--text);border-color:var(--line)}
+html[data-theme="dark"] .exercise-chip.selected{background:var(--accent-soft);border-color:var(--accent)}
+html[data-theme="dark"] .builder-item{background:#11171c;border-color:var(--line)}
+html[data-theme="dark"] .btn.secondary{background:#232b33;color:#eef3f5}
+html[data-theme="dark"] .btn.ghost{background:transparent;color:var(--accent);border-color:#31584d}
+html[data-theme="dark"] .btn.danger{background:#321c1b;color:#ff9e96;border-color:#63302d}
+html[data-theme="dark"] .training-overlay{background:#101419}
+html[data-theme="dark"] .summary-stat{background:#11171c}
+html[data-theme="dark"] .description,
+html[data-theme="dark"] .library-item p{color:#c2cbd2}
+html[data-theme="dark"] .notice{background:#30281a;color:#e9c474}
+html[data-theme="dark"] .pill{background:#232b33;color:#c7d0d7}
+html[data-theme="dark"] .pill.accent{background:var(--accent-soft);color:#8ee0ca}
+
+
+.login-gate{
+  position:fixed;
+  inset:0;
+  z-index:10000;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:22px;
+  background:
+    radial-gradient(circle at 20% 10%, rgba(31,111,95,.18), transparent 32%),
+    radial-gradient(circle at 80% 90%, rgba(31,111,95,.12), transparent 30%),
+    var(--bg);
+}
+.login-gate.hidden{display:none!important}
+.login-panel{
+  width:min(460px,100%);
+  background:var(--card);
+  border:1px solid var(--line);
+  border-radius:26px;
+  padding:24px;
+  box-shadow:var(--shadow);
+}
+.login-logo{
+  width:64px;height:64px;border-radius:18px;
+  background:var(--accent);
+  display:grid;place-items:center;
+  color:#fff;font-size:1.9rem;font-weight:900;
+  margin-bottom:16px;
+}
+.login-panel h1{margin:0 0 7px;font-size:1.7rem}
+.login-panel p{margin:0;color:var(--muted);line-height:1.5}
+.login-actions{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:14px}
+.login-actions .btn:first-child{grid-column:1/-1}
+.gate-status{min-height:22px;margin-top:12px;font-size:.84rem;color:var(--muted);line-height:1.45}
+.gate-status.error{color:var(--danger)}
+.gate-security{margin-top:16px;padding:11px 12px;border-radius:12px;background:var(--accent-soft);color:var(--accent);font-size:.8rem;line-height:1.45}
+@media (max-width:520px){
+  .login-panel{padding:20px;border-radius:22px}
+  .login-actions{grid-template-columns:1fr}
+  .login-actions .btn:first-child{grid-column:auto}
+}
+
+</style>
+</head>
+<body>
+
+<div id="loginGate" class="login-gate">
+  <div class="login-panel">
+    <div class="login-logo">CT</div>
+    <h1>Calisthenics Trainer</h1>
+    <p>Sign in to access your training sessions, history and settings.</p>
+
+    <div id="gateSetupNotice" class="notice hidden" style="margin-top:16px">
+      Firebase has not been configured yet. Complete <b>firebase-config.js</b> before publishing the app.
+    </div>
+
+    <div class="field" style="margin-top:18px">
+      <label for="gateEmail">Email</label>
+      <input id="gateEmail" type="email" autocomplete="email" placeholder="you@example.com" />
+    </div>
+    <div class="field">
+      <label for="gatePassword">Password</label>
+      <input id="gatePassword" type="password" autocomplete="current-password" placeholder="Password" />
+    </div>
+
+    <div class="login-actions">
+      <button class="btn" onclick="gateSignIn()">Sign In</button>
+      <button class="btn secondary" onclick="gateCreateAccount()">Create Account</button>
+      <button class="btn ghost" onclick="gateResetPassword()">Reset Password</button>
+    </div>
+
+    <div id="gateStatus" class="gate-status">Checking sign-in status…</div>
+
+    <div class="gate-security">
+      The website address is public, but the trainer interface is locked until Firebase confirms a signed-in account. Workout data remains protected by Firebase Authentication and Firestore Security Rules.
+    </div>
+  </div>
+</div>
+
+<div class="app">
+<header>
+  <div class="brand">
+    <div>
+      <h1>Calisthenics Trainer</h1>
+      <div class="sub">Calisthenics, yoga flow and mobility sessions</div>
+    </div>
+    <div class="row wrap" style="justify-content:flex-end">
+      <span class="pill accent" id="weeklyCount">0 workouts this week</span>
+      <span class="pill" id="cloudStatusPill">☁ Local only</span>
+    </div>
+  </div>
+</header>
+
+<main>
+  <section id="page-train" class="page active">
+    <div class="card hero">
+      <h2>Train</h2>
+      <p>Choose a saved session or build a quick workout. Your programs, settings and history stay saved on this device.</p>
+    </div>
+
+
+    <div id="installCard" class="card hidden">
+      <div class="row between">
+        <div>
+          <b>Install Calisthenics Trainer</b>
+          <div class="muted" style="font-size:.84rem;margin-top:3px">
+            Add it to your phone for a standalone, app-like experience and offline access.
+          </div>
+        </div>
+        <button id="installAppBtn" class="btn small" onclick="installPWA()">Install App</button>
+      </div>
+    </div>
+
+
+    <div class="card" id="progressionCard">
+      <div class="section-title">
+        <div>
+          <h3>4-Week Progression</h3>
+          <div class="muted" style="font-size:.84rem;margin-top:3px">3 short strength sessions per week, designed to fit inside a 30-minute yoga + strength day.</div>
+        </div>
+        <span class="pill accent" id="progressionWeekLabel">Week 1</span>
+      </div>
+      <div class="row wrap" style="margin-bottom:14px">
+        <button class="btn secondary small progression-week-btn" data-week="1" onclick="setProgressionWeek(1)">Week 1</button>
+        <button class="btn secondary small progression-week-btn" data-week="2" onclick="setProgressionWeek(2)">Week 2</button>
+        <button class="btn secondary small progression-week-btn" data-week="3" onclick="setProgressionWeek(3)">Week 3</button>
+        <button class="btn secondary small progression-week-btn" data-week="4" onclick="setProgressionWeek(4)">Week 4</button>
+      </div>
+      <div id="progressionSessions"></div>
+    </div>
+
+    <div class="section-title">
+      <h2>Saved sessions</h2>
+      <button class="btn small" onclick="openBuilder()">+ New session</button>
+    </div>
+    <div id="sessionList"></div>
+
+    <div class="card">
+      <div class="section-title"><h3>Quick workout</h3></div>
+      <p class="muted">Create a temporary workout without saving it.</p>
+      <button class="btn block" onclick="openBuilder(true)">Build quick workout</button>
+    </div>
+  </section>
+
+  <section id="page-sessions" class="page">
+    <div class="section-title">
+      <h2>Sessions</h2>
+      <button class="btn small" onclick="openBuilder()">+ Create</button>
+    </div>
+    <div id="sessionManagerList"></div>
+  </section>
+
+  <section id="page-exercises" class="page">
+    <div class="section-title"><h2>Exercise library</h2><span class="pill accent">35 exercises</span></div>
+    <div class="field">
+      <input id="exerciseSearch" placeholder="Search exercises..." oninput="renderExerciseLibrary()" />
+    </div>
+    <div class="row wrap" style="margin-bottom:12px">
+      <button class="btn secondary small" onclick="setFilter('All')">All</button>
+      <button class="btn secondary small" onclick="setFilter('Upper Body')">Upper Body</button>
+      <button class="btn secondary small" onclick="setFilter('Lower Body')">Lower Body</button>
+      <button class="btn secondary small" onclick="setFilter('Core')">Core</button>
+      <button class="btn secondary small" onclick="setFilter('Full Body')">Full Body</button>
+      <button class="btn secondary small" onclick="setFilter('Yoga Flow')">Yoga Flow</button>
+      <button class="btn secondary small" onclick="setFilter('Mobility')">Mobility</button>
+    </div>
+    <div id="exerciseLibrary"></div>
+  </section>
+
+  <section id="page-history" class="page">
+    <div class="section-title">
+      <h2>History</h2>
+      <button class="btn danger small" onclick="clearHistory()">Clear</button>
+    </div>
+    <div id="historyStats" class="grid two"></div>
+    <div class="notice" style="margin-top:14px">Calorie values are approximate estimates, not measured energy expenditure.</div>
+    <div class="card" style="margin-top:14px">
+      <div id="historyList"></div>
+    </div>
+  </section>
+
+  <section id="page-settings" class="page">
+    <div class="section-title"><h2>Settings</h2></div>
+
+    <div class="card">
+      <div class="section-title"><h3>Appearance</h3></div>
+      <div class="field">
+        <label for="appearanceMode">Theme</label>
+        <select id="appearanceMode" onchange="saveSettings(); applyTheme();">
+          <option value="system">Use phone setting</option>
+          <option value="light">Light</option>
+          <option value="dark">Dark</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="section-title"><h3>Workout screen</h3></div>
+      <div class="switch">
+        <div>
+          <b>Keep screen awake</b>
+          <div class="muted">Prevents the display from sleeping while a workout is active, when supported by the browser.</div>
+        </div>
+        <input type="checkbox" id="keepScreenAwake" onchange="saveSettings()" />
+      </div>
+    </div>
+
+
+    <div class="card" id="cloudSyncCard">
+      <div class="section-title">
+        <div>
+          <h3>Cloud Sync</h3>
+          <div class="muted" style="font-size:.84rem;margin-top:3px">Optional Firebase sync across phone, PC and other devices.</div>
+        </div>
+        <span class="pill" id="cloudCardStatus">Local only</span>
+      </div>
+
+      <div id="firebaseNotConfigured" class="notice hidden">
+        Firebase is not configured yet. Add your Firebase web configuration to <b>firebase-config.js</b>, then redeploy this folder to GitHub Pages.
+      </div>
+
+      <div id="cloudSignedOut">
+        <div class="grid two">
+          <div class="field">
+            <label for="cloudEmail">Email</label>
+            <input id="cloudEmail" type="email" autocomplete="email" placeholder="you@example.com" />
+          </div>
+          <div class="field">
+            <label for="cloudPassword">Password</label>
+            <input id="cloudPassword" type="password" autocomplete="current-password" placeholder="Password" />
+          </div>
+        </div>
+        <div class="row wrap">
+          <button class="btn" onclick="cloudSignInFromUI()">Sign In</button>
+          <button class="btn secondary" onclick="cloudCreateAccountFromUI()">Create Account</button>
+          <button class="btn ghost" onclick="cloudResetPasswordFromUI()">Reset Password</button>
+        </div>
+        <div class="muted" style="font-size:.82rem;line-height:1.5;margin-top:10px">
+          Signing in is optional. Without an account, the trainer continues to use local storage exactly as before.
+        </div>
+      </div>
+
+      <div id="cloudSignedIn" class="hidden">
+        <div class="builder-item">
+          <div class="row between">
+            <div>
+              <div class="builder-title" id="cloudAccountEmail">Signed in</div>
+              <div class="muted" id="cloudLastSync" style="font-size:.8rem;margin-top:3px">Not synced yet</div>
+            </div>
+            <span class="pill accent">Cloud enabled</span>
+          </div>
+        </div>
+        <div class="row wrap">
+          <button class="btn" onclick="cloudSyncNowFromUI()">Sync Now</button>
+          <button class="btn secondary" onclick="cloudBackupNowFromUI()">Cloud Backup</button>
+          <button class="btn secondary" onclick="cloudRestoreBackupFromUI()">Restore Backup</button>
+          <button class="btn danger" onclick="cloudSignOutFromUI()">Sign Out</button>
+        </div>
+      </div>
+
+      <div id="cloudMessage" class="muted" style="font-size:.82rem;line-height:1.5;margin-top:12px"></div>
+    </div>
+
+    <div class="card">
+      <div class="section-title"><h3>Backup & restore</h3></div>
+      <div class="muted" style="line-height:1.5;margin-bottom:12px">
+        Export your sessions, workout history and settings to a JSON backup. Import it later after changing phones, browsers or clearing site data.
+      </div>
+      <div class="row wrap">
+        <button class="btn" onclick="exportBackup()">Export Backup</button>
+        <button class="btn secondary" onclick="document.getElementById('backupImportFile').click()">Import Backup</button>
+        <input id="backupImportFile" class="hidden" type="file" accept=".json,application/json" onchange="importBackupFile(this.files[0]); this.value='';" />
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="section-title"><h3>Spotify / Music Mode</h3></div>
+      <div class="switch">
+        <div>
+          <b>Keep background music uninterrupted</b>
+          <div class="muted">Disables trainer voice/audio so Spotify or another music app can keep playing.</div>
+        </div>
+        <input type="checkbox" id="musicMode" onchange="saveSettings(); updateMusicModeUI();" />
+      </div>
+      <div class="switch">
+        <div>
+          <b>Vibration cues</b>
+          <div class="muted">Use short vibrations for exercise changes and completed timers instead of sound.</div>
+        </div>
+        <input type="checkbox" id="vibrationCues" onchange="saveSettings()" />
+      </div>
+      <div id="musicModeNote" class="notice hidden">
+        Music Mode is active. Voice guidance is temporarily suppressed during workouts.
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="switch">
+        <div><b>Voice guidance</b><div class="muted">Announce exercises and rest periods.</div></div>
+        <input type="checkbox" id="voiceEnabled" onchange="saveSettings()" />
+      </div>
+      <div class="field">
+        <label for="voiceSelect">Voice</label>
+        <select id="voiceSelect" onchange="saveSettings()"></select>
+      </div>
+      <div class="grid two">
+        <div class="field">
+          <label for="voiceRate">Speaking speed</label>
+          <select id="voiceRate" onchange="saveSettings()">
+            <option value="0.8">Slow</option>
+            <option value="1" selected>Normal</option>
+            <option value="1.15">Fast</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="voiceDetail">Voice detail</label>
+          <select id="voiceDetail" onchange="saveSettings()">
+            <option value="minimal">Minimal</option>
+            <option value="normal" selected>Normal</option>
+            <option value="coaching">Coaching</option>
+          </select>
+        </div>
+      </div>
+      <button class="btn secondary" onclick="testVoice()">Test voice</button>
+    </div>
+
+    <div class="card">
+      <div class="section-title"><h3>Calorie estimate</h3></div>
+      <div class="grid two">
+        <div class="field">
+          <label for="bodyWeight">Body weight (kg)</label>
+          <input id="bodyWeight" type="number" min="35" max="250" step="0.1" value="80" onchange="saveSettings()" />
+        </div>
+        <div class="field">
+          <label for="workoutIntensity">Default intensity</label>
+          <select id="workoutIntensity" onchange="saveSettings()">
+            <option value="light">Light</option>
+            <option value="moderate" selected>Moderate</option>
+            <option value="vigorous">Vigorous</option>
+          </select>
+        </div>
+      </div>
+      <div class="muted" style="font-size:.84rem">
+        Calories are estimates based on workout duration, body weight and intensity. They are not a medical measurement.
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="switch">
+        <div><b>Auto-start timed exercises</b><div class="muted">Start countdown as soon as the exercise card opens.</div></div>
+        <input type="checkbox" id="autoTimed" onchange="saveSettings()" />
+      </div>
+      <div class="switch">
+        <div><b>Auto-advance timed exercises</b><div class="muted">Move to the next card when the countdown reaches zero.</div></div>
+        <input type="checkbox" id="autoAdvance" onchange="saveSettings()" />
+      </div>
+      <div class="switch">
+        <div><b>10-second rest warning</b><div class="muted">Voice announces when 10 seconds remain.</div></div>
+        <input type="checkbox" id="restWarning" onchange="saveSettings()" />
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="section-title"><h3>App installation & storage</h3></div>
+      <div class="muted" style="line-height:1.5">
+        Sessions, settings and history are always stored locally on this device/browser.
+        If you sign in to Firebase, the same data is also synchronized to your private cloud account.
+        GitHub Pages hosts the app itself; Firebase stores the synchronized user data.
+      </div>
+    </div>
+  </section>
+
+  <section id="page-builder" class="page">
+    <div class="section-title">
+      <h2 id="builderHeading">Create session</h2>
+      <button class="btn secondary small" onclick="showPage('sessions')">Cancel</button>
+    </div>
+
+    <div class="card">
+      <div class="field">
+        <label>Session name</label>
+        <input id="sessionName" placeholder="e.g. Full Body 10 min" />
+      </div>
+      <div class="grid two">
+        <div class="field">
+          <label>Number of sets</label>
+          <input id="sessionSets" type="number" min="1" max="20" value="2" />
+        </div>
+        <div class="field">
+          <label>Rest between sets (seconds)</label>
+          <input id="setRest" type="number" min="0" max="600" value="45" />
+        </div>
+      </div>
+      <div class="field">
+        <label>Rest between exercises (seconds)</label>
+        <input id="exerciseRest" type="number" min="0" max="180" value="0" />
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="section-title">
+        <h3>Choose exercises</h3>
+        <span class="pill" id="selectedCount">0 selected</span>
+      </div>
+      <div id="exercisePicker" class="exercise-picker"></div>
+    </div>
+
+    <div class="card">
+      <div class="section-title"><h3>Exercise order & targets</h3></div>
+      <div id="builderExercises"></div>
+      <div id="builderEmpty" class="empty">Select exercises above to build your session.</div>
+    </div>
+
+    <button class="btn block" id="saveSessionBtn" onclick="saveSessionFromBuilder()">Save session</button>
+  </section>
+</main>
+
+<nav class="nav" id="bottomNav">
+  <button class="active" data-page="train" onclick="showPage('train')"><span class="ico">▶</span>Train</button>
+  <button data-page="sessions" onclick="showPage('sessions')"><span class="ico">▤</span>Sessions</button>
+  <button data-page="exercises" onclick="showPage('exercises')"><span class="ico">●</span>Exercises</button>
+  <button data-page="history" onclick="showPage('history')"><span class="ico">↗</span>History</button>
+  <button data-page="settings" onclick="showPage('settings')"><span class="ico">⚙</span>Settings</button>
+</nav>
+</div>
+
+<div id="trainingOverlay" class="training-overlay">
+  <div class="training-shell">
+    <div class="training-top">
+      <button class="btn secondary small" onclick="confirmExitWorkout()">✕ Exit</button>
+      <div style="text-align:center">
+        <div id="trainingSessionName" style="font-weight:900"></div>
+        <div id="setIndicator" class="muted" style="font-size:.84rem"></div>
+        <div id="musicModeBadge" class="pill accent hidden" style="margin-top:5px">♫ Music Mode</div>
+      </div>
+      <div class="timer-main" id="totalTimer">00:00</div>
+    </div>
+
+    <div class="progress"><span id="trainingProgress"></span></div>
+
+    <div class="training-card">
+      <div class="eyebrow" id="trainingEyebrow">Exercise</div>
+      <h2 id="trainingExerciseName">Push-ups</h2>
+      <div id="trainingTarget" class="target">10 reps</div>
+      <div id="countdownWrap" class="hidden">
+        <div id="exerciseCountdown" class="countdown">00:30</div>
+        <button class="btn secondary" id="timerStartBtn" onclick="toggleExerciseTimer()">Start timer</button>
+      </div>
+      <p id="trainingDescription" class="description"></p>
+      <div id="nextUp" class="pill" style="margin-top:18px"></div>
+    </div>
+
+    <div class="training-actions">
+      <button class="btn secondary prev" onclick="previousTrainingStep()">Previous</button>
+      <button class="btn" id="nextTrainingBtn" onclick="nextTrainingStep()">Done / Next</button>
+      <button class="btn secondary" id="pauseWorkoutBtn" onclick="toggleWorkoutPause()">Pause</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const EXERCISES = [
+  {id:'pushups',name:'Push-ups',area:'Upper Body',muscles:'Chest, shoulders, triceps, core',difficulty:'Intermediate',type:'reps',defaultValue:8,side:false,description:'Lower your chest toward the floor while keeping your body in one straight line, then press back up.',cue:'Keep your body straight and elbows controlled.'},
+  {id:'incline_pushups',name:'Incline push-ups',area:'Upper Body',muscles:'Chest, shoulders, triceps',difficulty:'Beginner',type:'reps',defaultValue:10,side:false,description:'Place your hands on a sturdy elevated surface and perform a push-up with your body in a straight line.',cue:'Use a higher surface to make the exercise easier.'},
+  {id:'pike_pushups',name:'Pike push-ups',area:'Upper Body',muscles:'Shoulders, triceps, upper chest',difficulty:'Intermediate',type:'reps',defaultValue:6,side:false,description:'Start in an inverted-V position, bend the elbows and lower your head toward the floor, then press back up.',cue:'Keep your hips high and move your head toward the floor.'},
+  {id:'squats',name:'Bodyweight squats',area:'Lower Body',muscles:'Quadriceps, glutes, hamstrings',difficulty:'Beginner',type:'reps',defaultValue:12,side:false,description:'Sit your hips back and down, keep the feet planted, then stand by driving through the whole foot.',cue:'Keep knees tracking in line with your toes.'},
+  {id:'reverse_lunges',name:'Reverse lunges',area:'Lower Body',muscles:'Quadriceps, glutes, hamstrings',difficulty:'Beginner–Intermediate',type:'reps',defaultValue:6,side:true,description:'Step one foot backward, lower under control, then push through the front foot to return to standing.',cue:'Use a comfortable step length and keep the front foot stable.'},
+  {id:'glute_bridges',name:'Glute bridges',area:'Lower Body',muscles:'Glutes, hamstrings, posterior chain',difficulty:'Beginner',type:'reps',defaultValue:12,side:false,description:'Lie on your back with knees bent, lift the hips by squeezing the glutes, pause, then lower slowly.',cue:'Avoid over-arching your lower back.'},
+  {id:'calf_raises',name:'Calf raises',area:'Lower Body',muscles:'Calves, ankle stabilizers',difficulty:'Beginner',type:'reps',defaultValue:15,side:false,description:'Rise onto the balls of your feet, pause at the top, then lower the heels slowly.',cue:'Use a wall or chair for balance if needed.'},
+  {id:'plank',name:'Plank',area:'Core',muscles:'Abdominals, shoulders, deep core',difficulty:'Beginner',type:'seconds',defaultValue:30,side:false,description:'Hold a straight-body position on your forearms and toes while bracing your abdomen and glutes.',cue:'Keep hips level and breathe normally.'},
+  {id:'side_plank',name:'Side plank',area:'Core',muscles:'Obliques, shoulders, core',difficulty:'Beginner–Intermediate',type:'seconds',defaultValue:20,side:true,description:'Support your body on one forearm and the side of your foot while keeping your hips lifted.',cue:'Stack shoulders and keep the body long.'},
+  {id:'dead_bug',name:'Dead bug',area:'Core',muscles:'Deep abdominals, core',difficulty:'Beginner',type:'reps',defaultValue:8,side:true,description:'Lie on your back and slowly extend the opposite arm and leg while keeping the lower back stable.',cue:'Move slowly and keep your ribs controlled.'},
+  {id:'bird_dog',name:'Bird dog',area:'Core',muscles:'Core, lower back, glutes',difficulty:'Beginner',type:'reps',defaultValue:8,side:true,description:'From hands and knees, extend one arm and the opposite leg, pause, then return with control.',cue:'Keep the hips square to the floor.'},
+  {id:'mountain_climbers',name:'Mountain climbers',area:'Full Body',muscles:'Core, shoulders, hip flexors',difficulty:'Intermediate',type:'seconds',defaultValue:20,side:false,description:'From a high plank, alternate driving the knees toward the chest while keeping your shoulders over your hands.',cue:'Keep the hips stable rather than bouncing.'},
+  {id:'scapular_pushups',name:'Scapular push-ups',area:'Upper Body',muscles:'Shoulder blades, serratus, shoulders',difficulty:'Beginner',type:'reps',defaultValue:10,side:false,description:'From a plank, keep the elbows straight and move the chest down and up by moving only the shoulder blades.',cue:'Use a small controlled range of motion.'},
+  {id:'rows_pullups',name:'Inverted rows or pull-ups',area:'Upper Body',muscles:'Upper back, biceps, forearms',difficulty:'Intermediate–Advanced',type:'reps',defaultValue:6,side:false,description:'Use a secure bar to pull your chest toward the bar for an inverted row, or pull your body upward for a pull-up.',cue:'Only use a stable, purpose-built support or pull-up bar.'},
+  {id:'bear_plank',name:'Bear plank',area:'Core',muscles:'Core, shoulders, quadriceps',difficulty:'Intermediate',type:'seconds',defaultValue:20,side:false,description:'Start on hands and knees, then lift both knees a few centimetres from the floor and hold the position.',cue:'Keep your back flat and knees close to the floor.'},
+  {id:'dynamic_goddess',name:'Dynamic Goddess Squat',area:'Lower Body',muscles:'Quadriceps, glutes, inner thighs, core',difficulty:'Intermediate',type:'seconds',defaultValue:30,side:false,description:'From a wide Goddess squat, stay low while smoothly shifting your weight left and right and adding small controlled up-and-down pulses.',cue:'Keep your knees tracking over your toes and your chest lifted.'},
+  {id:'spiderman_plank',name:'Spiderman Plank',area:'Core',muscles:'Abdominals, obliques, shoulders, hip flexors',difficulty:'Intermediate',type:'reps',defaultValue:8,side:true,description:'From a high plank, bring one knee toward the outside of the same-side elbow, return to plank, then alternate sides.',cue:'Keep your shoulders over your hands and avoid letting the hips sag.'},
+  {id:'cobra_pressups',name:'Cobra Press-Ups',area:'Yoga Flow',muscles:'Spinal extensors, chest, shoulders, triceps',difficulty:'Beginner',type:'reps',defaultValue:8,side:false,description:'Lie face down, place the hands near the ribs and gently press the chest upward toward Cobra before lowering with control.',cue:'Use the back muscles as well as the arms and avoid forcing the lower back.'},
+  {id:'chaturanga_updog',name:'Chaturanga → Upward Dog',area:'Yoga Flow',muscles:'Chest, triceps, shoulders, core, back',difficulty:'Intermediate',type:'reps',defaultValue:5,side:false,description:'Lower from plank into a controlled Chaturanga, then roll forward and press into Upward-Facing Dog with the chest lifted.',cue:'Keep elbows close in Chaturanga and shoulders away from the ears in Upward Dog.'},
+  {id:'updog_downdog_flow',name:'Upward Dog → Downward Dog Flow',area:'Yoga Flow',muscles:'Shoulders, back, core, hamstrings, chest',difficulty:'Beginner–Intermediate',type:'seconds',defaultValue:30,side:false,description:'Move smoothly between Upward-Facing Dog and Downward-Facing Dog, coordinating the transition with steady breathing.',cue:'Move through the shoulders with control rather than rushing the transition.'},
+  {id:'locust_lifts',name:'Locust Pose Lifts',area:'Yoga Flow',muscles:'Lower back, glutes, hamstrings, rear shoulders',difficulty:'Beginner–Intermediate',type:'reps',defaultValue:8,side:false,description:'Lie face down and lift the chest, arms and legs into a low Locust position, then lower slowly and repeat.',cue:'Think length rather than height and keep the back of the neck long.'},
+  {id:'child_pose',name:"Child's Pose",area:'Mobility',muscles:'Lower back, hips, shoulders',difficulty:'Beginner',type:'seconds',defaultValue:45,side:false,description:'Sit the hips toward the heels, extend the arms forward and allow the chest and forehead to relax toward the floor.',cue:'Let the breath soften the back and shoulders; use support under the hips if needed.'},
+  {id:'puppy_pose',name:'Puppy Pose',area:'Mobility',muscles:'Shoulders, upper back, chest, spine',difficulty:'Beginner',type:'seconds',defaultValue:30,side:false,description:'From hands and knees, keep the hips above the knees while walking the hands forward and lowering the chest toward the floor.',cue:'Keep the hips stacked over the knees and avoid forcing the shoulders.'},
+  {id:'sphinx_pose',name:'Sphinx Pose',area:'Mobility',muscles:'Lower back, chest, abdominals, shoulders',difficulty:'Beginner',type:'seconds',defaultValue:30,side:false,description:'Lie face down and prop yourself on the forearms with the elbows under or slightly ahead of the shoulders, gently lifting the chest.',cue:'Press the forearms down and lengthen the spine instead of compressing the lower back.'},
+  {id:'seal_pose',name:'Seal Pose',area:'Mobility',muscles:'Lower back, chest, shoulders, abdominals',difficulty:'Beginner–Intermediate',type:'seconds',defaultValue:20,side:false,description:'From a prone position, place the hands farther forward than in Cobra and straighten the arms as comfortable to create a stronger passive backbend.',cue:'Keep the glutes relaxed and reduce the height immediately if the lower back feels compressed.'}
+,
+  {id:'boat_pose',name:'Boat Pose',area:'Core',muscles:'Abdominals, hip flexors, deep core',difficulty:'Intermediate',type:'seconds',defaultValue:20,side:false,description:'Balance on your sitting bones with the torso lifted and legs raised, keeping the spine long and chest open.',cue:'Lift through the chest and avoid collapsing into the lower back.'},
+  {id:'half_boat',name:'Half Boat Hold',area:'Core',muscles:'Abdominals, hip flexors, deep core',difficulty:'Intermediate',type:'seconds',defaultValue:20,side:false,description:'From Boat Pose, lower the torso and legs closer to the floor while keeping the shoulders and heels lifted.',cue:'Keep the lower back supported and stop before the back arches.'},
+  {id:'boat_leg_extensions',name:'Boat Leg Extensions',area:'Core',muscles:'Abdominals, hip flexors, quadriceps',difficulty:'Intermediate',type:'reps',defaultValue:8,side:false,description:'Start in a tucked Boat position, extend both legs forward while leaning back slightly, then return to the tuck.',cue:'Move slowly and keep the chest lifted throughout.'},
+  {id:'boat_twists',name:'Boat Pose Twists',area:'Core',muscles:'Obliques, abdominals, hip flexors',difficulty:'Intermediate',type:'reps',defaultValue:8,side:true,description:'Hold a balanced Boat position and rotate the torso from side to side with control.',cue:'Rotate from the rib cage rather than just swinging the arms.'},
+  {id:'boat_knee_tucks',name:'Boat Knee Tucks',area:'Core',muscles:'Abdominals, hip flexors',difficulty:'Intermediate',type:'reps',defaultValue:10,side:false,description:'From a supported Boat position, extend the legs forward and then draw the knees back toward the chest.',cue:'Keep the movement controlled and avoid rounding excessively through the shoulders.'},
+  {id:'bridge_hold',name:'Bridge Pose Hold',area:'Lower Body',muscles:'Glutes, hamstrings, lower back, core',difficulty:'Beginner',type:'seconds',defaultValue:30,side:false,description:'Lie on your back with knees bent and feet planted, lift the hips and hold while gently engaging the glutes.',cue:'Keep the knees parallel and avoid over-arching the lower back.'},
+  {id:'bridge_pulses',name:'Bridge Pulses',area:'Lower Body',muscles:'Glutes, hamstrings, posterior chain',difficulty:'Beginner',type:'reps',defaultValue:15,side:false,description:'From the top of a bridge, lower the hips a short distance and press them back up in small controlled pulses.',cue:'Keep tension in the glutes and avoid bouncing.'},
+  {id:'marching_bridge',name:'Marching Bridge',area:'Lower Body',muscles:'Glutes, hamstrings, core, hip stabilizers',difficulty:'Intermediate',type:'reps',defaultValue:8,side:true,description:'Hold a bridge and alternately lift one foot from the floor as if marching while keeping the pelvis level.',cue:'Minimize hip rotation as each foot lifts.'},
+  {id:'single_leg_bridge',name:'Single-Leg Bridge',area:'Lower Body',muscles:'Glutes, hamstrings, core',difficulty:'Intermediate',type:'reps',defaultValue:8,side:true,description:'Perform a bridge using one supporting leg while the opposite leg remains raised.',cue:'Drive through the supporting heel and keep the hips level.'},
+  {id:'bridge_walkouts',name:'Bridge Walkouts',area:'Lower Body',muscles:'Hamstrings, glutes, core',difficulty:'Intermediate–Advanced',type:'reps',defaultValue:6,side:false,description:'From a bridge, take small alternating steps forward with the feet, then walk them back toward the hips while keeping the hips elevated.',cue:'Move in short steps and maintain tension through the hamstrings and glutes.'}
+
+];
+
+const LS = {
+  sessions:'ct_sessions_v1',
+  history:'ct_history_v1',
+  settings:'ct_settings_v1',
+  cloudMeta:'ct_cloud_meta_v1'
+};
+
+let sessions = JSON.parse(localStorage.getItem(LS.sessions) || '[]');
+let historyData = JSON.parse(localStorage.getItem(LS.history) || '[]');
+let settings = JSON.parse(localStorage.getItem(LS.settings) || '{}');
+let cloudMeta = JSON.parse(localStorage.getItem(LS.cloudMeta) || '{}');
+let currentFilter = 'All';
+
+let builder = {editingId:null, quick:false, exercises:[]};
+
+
+const PROGRESSION_PROGRAM = {
+  1: [
+    {label:'Monday', name:'Upper Body + Core', sets:2, setRest:45, exerciseRest:0, exercises:[
+      {exerciseId:'pushups',value:6},
+      {exerciseId:'pike_pushups',value:5},
+      {exerciseId:'scapular_pushups',value:8},
+      {exerciseId:'side_plank',value:15}
+    ]},
+    {label:'Wednesday', name:'Legs + Core', sets:2, setRest:45, exerciseRest:0, exercises:[
+      {exerciseId:'squats',value:10},
+      {exerciseId:'reverse_lunges',value:5},
+      {exerciseId:'glute_bridges',value:10},
+      {exerciseId:'dead_bug',value:6},
+      {exerciseId:'plank',value:20}
+    ]},
+    {label:'Friday', name:'Full Body', sets:2, setRest:45, exerciseRest:0, exercises:[
+      {exerciseId:'pushups',value:6},
+      {exerciseId:'squats',value:10},
+      {exerciseId:'mountain_climbers',value:15},
+      {exerciseId:'glute_bridges',value:10},
+      {exerciseId:'bear_plank',value:15}
+    ]}
+  ],
+  2: [
+    {label:'Monday', name:'Upper Body + Core', sets:2, setRest:45, exerciseRest:0, exercises:[
+      {exerciseId:'pushups',value:8},
+      {exerciseId:'pike_pushups',value:6},
+      {exerciseId:'scapular_pushups',value:10},
+      {exerciseId:'side_plank',value:20}
+    ]},
+    {label:'Wednesday', name:'Legs + Core', sets:2, setRest:45, exerciseRest:0, exercises:[
+      {exerciseId:'squats',value:12},
+      {exerciseId:'reverse_lunges',value:6},
+      {exerciseId:'glute_bridges',value:12},
+      {exerciseId:'dead_bug',value:8},
+      {exerciseId:'plank',value:25}
+    ]},
+    {label:'Friday', name:'Full Body', sets:2, setRest:45, exerciseRest:0, exercises:[
+      {exerciseId:'pushups',value:8},
+      {exerciseId:'squats',value:12},
+      {exerciseId:'mountain_climbers',value:20},
+      {exerciseId:'glute_bridges',value:12},
+      {exerciseId:'bear_plank',value:20}
+    ]}
+  ],
+  3: [
+    {label:'Monday', name:'Upper Body + Core', sets:2, setRest:45, exerciseRest:0, exercises:[
+      {exerciseId:'pushups',value:10},
+      {exerciseId:'pike_pushups',value:8},
+      {exerciseId:'scapular_pushups',value:12},
+      {exerciseId:'side_plank',value:25}
+    ]},
+    {label:'Wednesday', name:'Legs + Core', sets:2, setRest:45, exerciseRest:0, exercises:[
+      {exerciseId:'squats',value:15},
+      {exerciseId:'reverse_lunges',value:8},
+      {exerciseId:'single_leg_bridge',value:8},
+      {exerciseId:'dead_bug',value:10},
+      {exerciseId:'plank',value:30}
+    ]},
+    {label:'Friday', name:'Full Body', sets:2, setRest:45, exerciseRest:0, exercises:[
+      {exerciseId:'pushups',value:10},
+      {exerciseId:'squats',value:15},
+      {exerciseId:'mountain_climbers',value:25},
+      {exerciseId:'reverse_lunges',value:6},
+      {exerciseId:'bear_plank',value:25}
+    ]}
+  ],
+  4: [
+    {label:'Monday', name:'Upper Body + Core', sets:2, setRest:45, exerciseRest:0, exercises:[
+      {exerciseId:'pushups',value:12},
+      {exerciseId:'pike_pushups',value:10},
+      {exerciseId:'scapular_pushups',value:12},
+      {exerciseId:'side_plank',value:30}
+    ]},
+    {label:'Wednesday', name:'Legs + Core', sets:2, setRest:45, exerciseRest:0, exercises:[
+      {exerciseId:'squats',value:15},
+      {exerciseId:'reverse_lunges',value:10},
+      {exerciseId:'single_leg_bridge',value:10},
+      {exerciseId:'dead_bug',value:10},
+      {exerciseId:'plank',value:40}
+    ]},
+    {label:'Friday', name:'Full Body', sets:2, setRest:45, exerciseRest:0, exercises:[
+      {exerciseId:'pushups',value:12},
+      {exerciseId:'squats',value:15},
+      {exerciseId:'reverse_lunges',value:8},
+      {exerciseId:'mountain_climbers',value:30},
+      {exerciseId:'bear_plank',value:30},
+      {exerciseId:'spiderman_plank',value:6}
+    ]}
+  ]
+};
+
+function setProgressionWeek(week){
+  settings.progressionWeek = Math.min(4, Math.max(1, Number(week)||1));
+  localStorage.setItem(LS.settings, JSON.stringify(settings));
+  renderProgression();
+}
+
+function renderProgression(){
+  const week = Number(settings.progressionWeek)||1;
+  const label = document.getElementById('progressionWeekLabel');
+  if(label) label.textContent = `Week ${week}`;
+
+  document.querySelectorAll('.progression-week-btn').forEach(btn=>{
+    const active = Number(btn.dataset.week) === week;
+    btn.classList.toggle('btn', active);
+    btn.classList.toggle('secondary', !active);
+    if(active) btn.style.background = 'var(--accent)';
+    else btn.style.background = '';
+    if(active) btn.style.color = '#fff';
+    else btn.style.color = '';
+  });
+
+  const container = document.getElementById('progressionSessions');
+  if(!container) return;
+  container.innerHTML = PROGRESSION_PROGRAM[week].map((s,i)=>{
+    const session = {...s, id:`progression_w${week}_${i}`, name:`Week ${week} · ${s.name}`};
+    const strengthMins = estimateSession(session);
+    const yogaMins = Math.max(0, 30-strengthMins);
+    return `<div class="builder-item" style="margin-bottom:10px">
+      <div class="row between" style="align-items:flex-start">
+        <div>
+          <div class="builder-title">${s.label} · ${escapeHtml(s.name)}</div>
+          <div class="muted" style="font-size:.8rem;margin-top:3px">${s.sets} sets · ~${strengthMins} min strength · ${yogaMins ? `up to ~${yogaMins} min yoga` : '30-min session'}</div>
+        </div>
+        <button class="btn small" onclick="startProgressionSession(${week},${i})">Start</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function startProgressionSession(week,index){
+  const source = PROGRESSION_PROGRAM[week]?.[index];
+  if(!source) return;
+  const session = JSON.parse(JSON.stringify(source));
+  session.id = `progression_w${week}_${index}`;
+  session.name = `Week ${week} · ${source.name}`;
+  startWorkout(session);
+}
+
+
+let workout = null;
+let totalTimerInterval = null;
+let exerciseTimerInterval = null;
+let availableVoices = [];
+
+
+let wakeLock = null;
+
+async function requestWorkoutWakeLock(){
+  if(!settings.keepScreenAwake || !('wakeLock' in navigator) || !workout) return;
+  try{
+    wakeLock = await navigator.wakeLock.request('screen');
+    wakeLock.addEventListener('release', ()=>{ wakeLock = null; });
+  }catch(err){
+    console.warn('Wake Lock unavailable:', err);
+  }
+}
+
+async function releaseWorkoutWakeLock(){
+  if(!wakeLock) return;
+  try{ await wakeLock.release(); }catch(e){}
+  wakeLock = null;
+}
+
+document.addEventListener('visibilitychange', ()=>{
+  if(document.visibilityState === 'visible' && workout && settings.keepScreenAwake && !wakeLock){
+    requestWorkoutWakeLock();
+  }
+});
+
+
+function defaultSettings(){
+  return {
+    voiceEnabled:true,
+    voiceName:'',
+    voiceRate:1,
+    voiceDetail:'normal',
+    autoTimed:false,
+    autoAdvance:false,
+    restWarning:true,
+    bodyWeight:80,
+    workoutIntensity:'moderate',
+    musicMode:true,
+    vibrationCues:true,
+    appearanceMode:'system',
+    keepScreenAwake:true,
+    progressionWeek:1
+  };
+}
+settings = {...defaultSettings(), ...settings};
+document.documentElement.setAttribute('data-theme',
+  settings.appearanceMode === 'dark' ? 'dark' :
+  settings.appearanceMode === 'light' ? 'light' :
+  (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light')
+);
+
+
+
+function gateSetStatus(message='', isError=false){
+  const el = document.getElementById('gateStatus');
+  if(!el) return;
+  el.textContent = message;
+  el.classList.toggle('error', !!isError);
+}
+
+function setLoginGateState(state={}){
+  const gate = document.getElementById('loginGate');
+  if(!gate) return;
+
+  const configured = !!state.configured;
+  const signedIn = !!state.signedIn;
+  const setup = document.getElementById('gateSetupNotice');
+
+  if(setup) setup.classList.toggle('hidden', configured);
+  gate.classList.toggle('hidden', signedIn);
+
+  if(!configured){
+    gateSetStatus('Firebase setup is required before the trainer can be unlocked.', true);
+    return;
+  }
+
+  if(signedIn){
+    gateSetStatus('');
+  }else if(state.status === 'Offline'){
+    gateSetStatus('You are offline. Firebase must confirm the saved account session before the trainer can unlock.', true);
+  }else{
+    gateSetStatus(state.message || 'Enter your account details to continue.', !!state.error);
+  }
+}
+window.setLoginGateState = setLoginGateState;
+
+function gateCredentials(){
+  return {
+    email:(document.getElementById('gateEmail')?.value || '').trim(),
+    password:document.getElementById('gatePassword')?.value || ''
+  };
+}
+
+async function gateSignIn(){
+  const {email,password}=gateCredentials();
+  if(!email || !password){ gateSetStatus('Enter your email and password.', true); return; }
+  if(!window.trainerCloud){ gateSetStatus('Firebase is still loading. Try again in a moment.', true); return; }
+  gateSetStatus('Signing in…');
+  await window.trainerCloud.signIn(email,password);
+}
+
+async function gateCreateAccount(){
+  const {email,password}=gateCredentials();
+  if(!email || !password){ gateSetStatus('Enter an email and password first.', true); return; }
+  if(!window.trainerCloud){ gateSetStatus('Firebase is still loading. Try again in a moment.', true); return; }
+  gateSetStatus('Creating account…');
+  await window.trainerCloud.createAccount(email,password);
+}
+
+async function gateResetPassword(){
+  const email=(document.getElementById('gateEmail')?.value || '').trim();
+  if(!email){ gateSetStatus('Enter your email address first.', true); return; }
+  if(!window.trainerCloud){ gateSetStatus('Firebase is still loading. Try again in a moment.', true); return; }
+  gateSetStatus('Sending password-reset email…');
+  await window.trainerCloud.resetPassword(email);
+}
+
+document.addEventListener('keydown', event=>{
+  if(event.key === 'Enter' && !document.getElementById('loginGate')?.classList.contains('hidden')){
+    gateSignIn();
+  }
+});
+
+
+function touchLocalState(){
+  cloudMeta.localUpdatedAt = Date.now();
+  localStorage.setItem(LS.cloudMeta, JSON.stringify(cloudMeta));
+  if(window.trainerCloud && typeof window.trainerCloud.scheduleSync === 'function'){
+    window.trainerCloud.scheduleSync();
+  }
+}
+
+function recordCloudSyncedAt(timestamp=Date.now()){
+  cloudMeta.lastSyncedAt = timestamp;
+  localStorage.setItem(LS.cloudMeta, JSON.stringify(cloudMeta));
+}
+
+window.getTrainerLocalState = function(){
+  return {
+    sessions: JSON.parse(JSON.stringify(sessions)),
+    history: JSON.parse(JSON.stringify(historyData)),
+    settings: JSON.parse(JSON.stringify(settings)),
+    localUpdatedAt: Number(cloudMeta.localUpdatedAt || 0)
+  };
+};
+
+window.applyTrainerCloudState = function(state, updatedAt=Date.now()){
+  if(!state || !Array.isArray(state.sessions) || !Array.isArray(state.history) || typeof state.settings !== 'object'){
+    throw new Error('Invalid cloud state.');
+  }
+
+  sessions = JSON.parse(JSON.stringify(state.sessions));
+  historyData = JSON.parse(JSON.stringify(state.history));
+  settings = {...defaultSettings(), ...JSON.parse(JSON.stringify(state.settings))};
+
+  localStorage.setItem(LS.sessions, JSON.stringify(sessions));
+  localStorage.setItem(LS.history, JSON.stringify(historyData));
+  localStorage.setItem(LS.settings, JSON.stringify(settings));
+
+  cloudMeta.localUpdatedAt = Number(updatedAt || Date.now());
+  cloudMeta.lastSyncedAt = Date.now();
+  localStorage.setItem(LS.cloudMeta, JSON.stringify(cloudMeta));
+
+  loadSettingsUI();
+  renderSessions();
+  renderHistory();
+  renderProgression();
+  updateWeeklyCount();
+};
+
+function cloudSetMessage(message='', tone='normal'){
+  const el = document.getElementById('cloudMessage');
+  if(!el) return;
+  el.textContent = message;
+  el.style.color = tone === 'error' ? 'var(--danger)' : '';
+}
+
+function setCloudUIState(state={}){
+  const configured = !!state.configured;
+  const signedIn = !!state.signedIn;
+  const email = state.email || '';
+  const status = state.status || (signedIn ? 'Cloud enabled' : 'Local only');
+
+  const notConfigured = document.getElementById('firebaseNotConfigured');
+  const signedOutBox = document.getElementById('cloudSignedOut');
+  const signedInBox = document.getElementById('cloudSignedIn');
+  const pill = document.getElementById('cloudStatusPill');
+  const cardPill = document.getElementById('cloudCardStatus');
+  const emailEl = document.getElementById('cloudAccountEmail');
+  const syncEl = document.getElementById('cloudLastSync');
+
+  if(notConfigured) notConfigured.classList.toggle('hidden', configured);
+  if(signedOutBox) signedOutBox.classList.toggle('hidden', signedIn || !configured);
+  if(signedInBox) signedInBox.classList.toggle('hidden', !signedIn);
+
+  if(pill){
+    pill.textContent = signedIn ? `☁ ${status}` : (configured ? '☁ Local only' : '☁ Setup needed');
+    pill.classList.toggle('accent', signedIn);
+  }
+  if(cardPill){
+    cardPill.textContent = signedIn ? status : (configured ? 'Local only' : 'Setup needed');
+    cardPill.classList.toggle('accent', signedIn);
+  }
+  if(emailEl && signedIn) emailEl.textContent = email || 'Signed in';
+
+  if(syncEl){
+    const stamp = state.lastSync || cloudMeta.lastSyncedAt;
+    syncEl.textContent = stamp ? `Last sync: ${new Date(stamp).toLocaleString()}` : 'Not synced yet';
+  }
+
+  if(state.message) cloudSetMessage(state.message, state.error ? 'error' : 'normal');
+}
+window.setCloudUIState = function(state={}){
+  setCloudUIState(state);
+  setLoginGateState(state);
+};
+setLoginGateState({configured:false,signedIn:false,status:'Loading…',message:'Checking Firebase configuration…'});
+
+function cloudCredentials(){
+  return {
+    email:(document.getElementById('cloudEmail')?.value || '').trim(),
+    password:document.getElementById('cloudPassword')?.value || ''
+  };
+}
+async function cloudSignInFromUI(){
+  const {email,password}=cloudCredentials();
+  if(!email || !password){ cloudSetMessage('Enter your email and password.', 'error'); return; }
+  if(!window.trainerCloud){ cloudSetMessage('Firebase is still loading.', 'error'); return; }
+  await window.trainerCloud.signIn(email,password);
+}
+async function cloudCreateAccountFromUI(){
+  const {email,password}=cloudCredentials();
+  if(!email || !password){ cloudSetMessage('Enter an email and password first.', 'error'); return; }
+  if(!window.trainerCloud){ cloudSetMessage('Firebase is still loading.', 'error'); return; }
+  await window.trainerCloud.createAccount(email,password);
+}
+async function cloudResetPasswordFromUI(){
+  const email=(document.getElementById('cloudEmail')?.value || '').trim();
+  if(!email){ cloudSetMessage('Enter your email address first.', 'error'); return; }
+  if(!window.trainerCloud){ cloudSetMessage('Firebase is still loading.', 'error'); return; }
+  await window.trainerCloud.resetPassword(email);
+}
+async function cloudSignOutFromUI(){
+  if(window.trainerCloud){
+    await window.trainerCloud.signOut();
+    setLoginGateState({configured:true,signedIn:false,status:'Local only',message:'Signed out.'});
+  }
+}
+async function cloudSyncNowFromUI(){
+  if(window.trainerCloud) await window.trainerCloud.syncNow(true);
+}
+async function cloudBackupNowFromUI(){
+  if(window.trainerCloud) await window.trainerCloud.backupNow();
+}
+async function cloudRestoreBackupFromUI(){
+  if(window.trainerCloud) await window.trainerCloud.restoreBackup();
+}
+
+
+function saveSessions(){
+  localStorage.setItem(LS.sessions, JSON.stringify(sessions));
+  touchLocalState();
+  renderSessions();
+}
+function saveHistory(){
+  localStorage.setItem(LS.history, JSON.stringify(historyData));
+  touchLocalState();
+  renderHistory();
+  updateWeeklyCount();
+}
+function saveSettings(){
+  settings.voiceEnabled = document.getElementById('voiceEnabled').checked;
+  settings.voiceName = document.getElementById('voiceSelect').value;
+  settings.voiceRate = Number(document.getElementById('voiceRate').value);
+  settings.voiceDetail = document.getElementById('voiceDetail').value;
+  settings.autoTimed = document.getElementById('autoTimed').checked;
+  settings.autoAdvance = document.getElementById('autoAdvance').checked;
+  settings.restWarning = document.getElementById('restWarning').checked;
+  settings.bodyWeight = Math.max(35, Number(document.getElementById('bodyWeight').value)||80);
+  settings.workoutIntensity = document.getElementById('workoutIntensity').value;
+  settings.musicMode = document.getElementById('musicMode').checked;
+  settings.vibrationCues = document.getElementById('vibrationCues').checked;
+  settings.appearanceMode = document.getElementById('appearanceMode').value;
+  settings.keepScreenAwake = document.getElementById('keepScreenAwake').checked;
+  localStorage.setItem(LS.settings, JSON.stringify(settings));
+  touchLocalState();
+}
+
+function showPage(name){
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  const page = document.getElementById('page-' + name);
+  if(page) page.classList.add('active');
+  document.querySelectorAll('.nav button').forEach(b => b.classList.toggle('active', b.dataset.page === name));
+  document.getElementById('bottomNav').style.display = name === 'builder' ? 'none' : 'grid';
+  if(name === 'train') renderProgression();
+  if(name === 'sessions') renderSessions();
+  if(name === 'history') renderHistory();
+  if(name === 'exercises') renderExerciseLibrary();
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function renderSessions(){
+  const render = (target, manager=false) => {
+    const el = document.getElementById(target);
+    if(!sessions.length){
+      el.innerHTML = '<div class="card empty">No saved sessions yet. Create your first training session.</div>';
+      return;
+    }
+    el.innerHTML = sessions.map(s => {
+      const exNames = s.exercises.map(x => getExercise(x.exerciseId)?.name || '').join(' · ');
+      return `
+      <div class="card session-card">
+        <div class="row between">
+          <div>
+            <h3>${escapeHtml(s.name)}</h3>
+            <div class="meta">${s.sets} set${s.sets>1?'s':''} · ${s.exercises.length} exercises · ${s.setRest}s set rest</div>
+          </div>
+          <span class="pill">${estimateSession(s)} min est.</span>
+        </div>
+        <div class="muted" style="font-size:.84rem;margin-bottom:12px">${escapeHtml(exNames)}</div>
+        <div class="session-actions">
+          <button class="btn small" onclick="startSession('${s.id}')">Start</button>
+          <button class="btn secondary small" onclick="editSession('${s.id}')">Edit</button>
+          <button class="btn secondary small" onclick="duplicateSession('${s.id}')">Duplicate</button>
+          ${manager ? `<button class="btn danger small" onclick="deleteSession('${s.id}')">Delete</button>` : ''}
+        </div>
+      </div>`;
+    }).join('');
+  };
+  render('sessionList', false);
+  render('sessionManagerList', true);
+}
+
+function estimateSession(s){
+  let seconds = 0;
+  s.exercises.forEach(x=>{
+    const ex = getExercise(x.exerciseId);
+    const sideMultiplier = ex?.side ? 2 : 1;
+    if(ex?.type === 'seconds') seconds += Number(x.value) * sideMultiplier;
+    else seconds += Number(x.value) * 3 * sideMultiplier;
+    seconds += Number(s.exerciseRest || 0);
+  });
+  seconds *= Number(s.sets || 1);
+  seconds += Math.max(0, Number(s.sets || 1)-1) * Number(s.setRest || 0);
+  return Math.max(1, Math.round(seconds/60));
+}
+
+function openBuilder(quick=false){
+  builder = {editingId:null, quick, exercises:[]};
+  document.getElementById('builderHeading').textContent = quick ? 'Quick workout' : 'Create session';
+  document.getElementById('saveSessionBtn').textContent = quick ? 'Start quick workout' : 'Save session';
+  document.getElementById('sessionName').value = quick ? 'Quick Workout' : '';
+  document.getElementById('sessionSets').value = 2;
+  document.getElementById('setRest').value = 45;
+  document.getElementById('exerciseRest').value = 0;
+  renderExercisePicker();
+  renderBuilderExercises();
+  showPage('builder');
+}
+
+function editSession(id){
+  const s = sessions.find(x=>x.id===id);
+  if(!s) return;
+  builder = {editingId:id, quick:false, exercises:JSON.parse(JSON.stringify(s.exercises))};
+  document.getElementById('builderHeading').textContent = 'Edit session';
+  document.getElementById('saveSessionBtn').textContent = 'Save changes';
+  document.getElementById('sessionName').value = s.name;
+  document.getElementById('sessionSets').value = s.sets;
+  document.getElementById('setRest').value = s.setRest;
+  document.getElementById('exerciseRest').value = s.exerciseRest || 0;
+  renderExercisePicker();
+  renderBuilderExercises();
+  showPage('builder');
+}
+
+function renderExercisePicker(){
+  const el = document.getElementById('exercisePicker');
+  el.innerHTML = EXERCISES.map(ex=>{
+    const selected = builder.exercises.some(x=>x.exerciseId===ex.id);
+    return `<button class="exercise-chip ${selected?'selected':''}" onclick="toggleBuilderExercise('${ex.id}')">
+      <b>${escapeHtml(ex.name)}</b><br>
+      <span class="muted" style="font-size:.78rem">${ex.area} · ${ex.difficulty}</span>
+    </button>`;
+  }).join('');
+  document.getElementById('selectedCount').textContent = builder.exercises.length + ' selected';
+}
+
+function toggleBuilderExercise(id){
+  const idx = builder.exercises.findIndex(x=>x.exerciseId===id);
+  if(idx >= 0) builder.exercises.splice(idx,1);
+  else {
+    const ex = getExercise(id);
+    builder.exercises.push({exerciseId:id, value:ex.defaultValue});
+  }
+  renderExercisePicker();
+  renderBuilderExercises();
+}
+
+function renderBuilderExercises(){
+  const el = document.getElementById('builderExercises');
+  document.getElementById('builderEmpty').classList.toggle('hidden', builder.exercises.length>0);
+  el.innerHTML = builder.exercises.map((item,i)=>{
+    const ex = getExercise(item.exerciseId);
+    const unit = ex.type === 'seconds' ? 'seconds' : 'reps';
+    return `
+    <div class="builder-item">
+      <div class="builder-head">
+        <div>
+          <div class="builder-title">${i+1}. ${escapeHtml(ex.name)}</div>
+          <div class="muted" style="font-size:.8rem">${escapeHtml(ex.muscles)}</div>
+        </div>
+        <div class="row">
+          <button class="icon-btn" onclick="moveBuilderExercise(${i},-1)" ${i===0?'disabled':''}>↑</button>
+          <button class="icon-btn" onclick="moveBuilderExercise(${i},1)" ${i===builder.exercises.length-1?'disabled':''}>↓</button>
+          <button class="icon-btn" onclick="removeBuilderExercise(${i})">✕</button>
+        </div>
+      </div>
+      <div class="builder-controls">
+        <div>
+          <label>Target</label>
+          <input type="number" min="1" max="999" value="${item.value}" onchange="updateBuilderValue(${i},this.value)" />
+        </div>
+        <div>
+          <label>Unit</label>
+          <input value="${unit}${ex.side?' / side':''}" disabled />
+        </div>
+        <div>
+          <label>Difficulty</label>
+          <input value="${ex.difficulty}" disabled />
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+  document.getElementById('selectedCount').textContent = builder.exercises.length + ' selected';
+}
+
+function moveBuilderExercise(i,dir){
+  const j = i+dir;
+  if(j<0 || j>=builder.exercises.length) return;
+  [builder.exercises[i],builder.exercises[j]]=[builder.exercises[j],builder.exercises[i]];
+  renderBuilderExercises();
+}
+function removeBuilderExercise(i){
+  builder.exercises.splice(i,1);
+  renderExercisePicker(); renderBuilderExercises();
+}
+function updateBuilderValue(i,v){
+  builder.exercises[i].value = Math.max(1, Number(v)||1);
+}
+
+function saveSessionFromBuilder(){
+  const name = document.getElementById('sessionName').value.trim() || (builder.quick?'Quick Workout':'Untitled Session');
+  const sets = Math.max(1, Number(document.getElementById('sessionSets').value)||1);
+  const setRest = Math.max(0, Number(document.getElementById('setRest').value)||0);
+  const exerciseRest = Math.max(0, Number(document.getElementById('exerciseRest').value)||0);
+
+  if(!builder.exercises.length){
+    alert('Select at least one exercise.');
+    return;
+  }
+
+  const data = {
+    id: builder.editingId || ('s_' + Date.now()),
+    name, sets, setRest, exerciseRest,
+    exercises: JSON.parse(JSON.stringify(builder.exercises))
+  };
+
+  if(builder.quick){
+    startWorkout(data);
+    return;
+  }
+
+  if(builder.editingId){
+    sessions = sessions.map(s=>s.id===builder.editingId ? data : s);
+  } else {
+    sessions.unshift(data);
+  }
+  saveSessions();
+  showPage('sessions');
+}
+
+function duplicateSession(id){
+  const s = sessions.find(x=>x.id===id);
+  if(!s) return;
+  sessions.unshift({...JSON.parse(JSON.stringify(s)), id:'s_'+Date.now(), name:s.name+' Copy'});
+  saveSessions();
+}
+
+function deleteSession(id){
+  const s = sessions.find(x=>x.id===id);
+  if(!s) return;
+  if(confirm(`Delete "${s.name}"?`)){
+    sessions = sessions.filter(x=>x.id!==id);
+    saveSessions();
+  }
+}
+
+function renderExerciseLibrary(){
+  const q = (document.getElementById('exerciseSearch')?.value || '').toLowerCase().trim();
+  const filtered = EXERCISES.filter(ex=>{
+    const matchesFilter = currentFilter==='All' || ex.area===currentFilter;
+    const hay = `${ex.name} ${ex.area} ${ex.muscles} ${ex.difficulty} ${ex.description}`.toLowerCase();
+    return matchesFilter && hay.includes(q);
+  });
+  document.getElementById('exerciseLibrary').innerHTML = filtered.map(ex=>`
+    <div class="card library-item">
+      <div class="row between">
+        <h3>${escapeHtml(ex.name)}</h3>
+        <span class="pill">${ex.type==='seconds'?'Timed':'Reps'}</span>
+      </div>
+      <div class="tags">
+        <span class="pill accent">${ex.area}</span>
+        <span class="pill">${ex.difficulty}</span>
+        <span class="pill">${escapeHtml(ex.muscles)}</span>
+      </div>
+      <p>${escapeHtml(ex.description)}</p>
+      <p><b>Technique cue:</b> ${escapeHtml(ex.cue)}</p>
+      <p><b>Default target:</b> ${ex.defaultValue} ${ex.type==='seconds'?'seconds':'reps'}${ex.side?' per side':''}</p>
+    </div>`).join('');
+}
+
+function setFilter(f){ currentFilter=f; renderExerciseLibrary(); }
+
+function startSession(id){
+  const s = sessions.find(x=>x.id===id);
+  if(s) startWorkout(s);
+}
+
+function buildWorkoutSteps(session){
+  const steps = [];
+  for(let set=1; set<=session.sets; set++){
+    session.exercises.forEach((item,idx)=>{
+      const ex = getExercise(item.exerciseId);
+      if(ex?.side){
+        steps.push({kind:'exercise',set,index:idx,...item,sideLabel:'LEFT'});
+        steps.push({kind:'exercise',set,index:idx,...item,sideLabel:'RIGHT'});
+      } else {
+        steps.push({kind:'exercise',set,index:idx,...item});
+      }
+      if(session.exerciseRest>0 && idx<session.exercises.length-1){
+        steps.push({kind:'rest',restType:'exercise',seconds:session.exerciseRest,set,nextExerciseId:session.exercises[idx+1].exerciseId});
+      }
+    });
+    if(set<session.sets && session.setRest>0){
+      steps.push({kind:'rest',restType:'set',seconds:session.setRest,set,nextExerciseId:session.exercises[0].exerciseId});
+    }
+  }
+  return steps;
+}
+
+function startWorkout(session){
+  clearTrainingTimers();
+  workout = {
+    session: JSON.parse(JSON.stringify(session)),
+    steps: buildWorkoutSteps(session),
+    stepIndex:0,
+    startedAt:Date.now(),
+    paused:false,
+    pausedAt:null,
+    totalPausedMs:0,
+    currentCountdown:null,
+    exerciseTimerRunning:false,
+    warningSpoken:false
+  };
+  document.getElementById('trainingOverlay').classList.add('active');
+  document.body.style.overflow='hidden';
+  if(settings.musicMode && 'speechSynthesis' in window) window.speechSynthesis.cancel();
+  const musicBadge = document.getElementById('musicModeBadge');
+  if(musicBadge) musicBadge.classList.toggle('hidden', !settings.musicMode);
+  vibrateCue(50);
+  document.getElementById('trainingSessionName').textContent = session.name;
+  requestWorkoutWakeLock();
+  totalTimerInterval = setInterval(updateTotalTimer,250);
+  renderTrainingStep();
+  updateTotalTimer();
+}
+
+function renderTrainingStep(){
+  stopExerciseCountdown();
+  const step = workout.steps[workout.stepIndex];
+  if(!step){ finishWorkout(); return; }
+
+  vibrateCue(35);
+  const progress = (workout.stepIndex / workout.steps.length)*100;
+  document.getElementById('trainingProgress').style.width = progress+'%';
+  document.getElementById('setIndicator').textContent = `Set ${step.set} of ${workout.session.sets}`;
+  document.getElementById('countdownWrap').classList.add('hidden');
+  document.getElementById('nextTrainingBtn').textContent = 'Done / Next';
+  document.getElementById('nextTrainingBtn').disabled = false;
+
+  if(step.kind==='rest'){
+    document.getElementById('trainingEyebrow').textContent = step.restType==='set' ? 'Rest between sets' : 'Rest';
+    document.getElementById('trainingExerciseName').textContent = 'REST';
+    document.getElementById('trainingDescription').textContent =
+      step.restType==='set' ? `Set ${step.set} complete. Recover before the next set.` : 'Recover briefly before the next exercise.';
+    document.getElementById('trainingTarget').textContent = '';
+    document.getElementById('countdownWrap').classList.remove('hidden');
+    workout.currentCountdown = step.seconds;
+    workout.warningSpoken = false;
+    updateCountdownDisplay();
+    document.getElementById('timerStartBtn').textContent='Pause timer';
+    document.getElementById('nextTrainingBtn').textContent='Skip Rest';
+    const next = getExercise(step.nextExerciseId);
+    document.getElementById('nextUp').textContent = next ? `Next: ${next.name}` : '';
+    speak(step.restType==='set' ? `Set ${step.set} complete. Rest for ${step.seconds} seconds.` : `Rest for ${step.seconds} seconds.`);
+    startExerciseCountdown();
+    return;
+  }
+
+  const ex = getExercise(step.exerciseId);
+  document.getElementById('trainingEyebrow').textContent = step.sideLabel ? `${ex.area} · ${step.sideLabel}` : ex.area;
+  document.getElementById('trainingExerciseName').textContent = ex.name;
+  const targetText = step.sideLabel
+    ? `${step.sideLabel} · ${step.value} ${ex.type==='seconds'?'seconds':'reps'}`
+    : `${step.value} ${ex.type==='seconds'?'seconds':'reps'}`;
+  document.getElementById('trainingTarget').textContent = targetText;
+  document.getElementById('trainingDescription').textContent = ex.description;
+  const nextStep = workout.steps[workout.stepIndex+1];
+  let nextName = 'Workout complete';
+  if(nextStep){
+    if(nextStep.kind==='rest') nextName = 'Rest';
+    else {
+      const nEx = getExercise(nextStep.exerciseId);
+      nextName = `${nEx?.name || ''}${nextStep.sideLabel ? ` · ${nextStep.sideLabel}` : ''}`;
+    }
+  }
+  document.getElementById('nextUp').textContent = `Next: ${nextName}`;
+  speakExercise(ex, step.value, step.sideLabel);
+
+  if(ex.type==='seconds'){
+    document.getElementById('countdownWrap').classList.remove('hidden');
+    workout.currentCountdown = Number(step.value);
+    updateCountdownDisplay();
+    document.getElementById('timerStartBtn').textContent='Start timer';
+    if(settings.autoTimed) startExerciseCountdown();
+  }
+}
+
+function nextTrainingStep(){
+  workout.stepIndex++;
+  renderTrainingStep();
+}
+function previousTrainingStep(){
+  if(!workout || workout.stepIndex===0) return;
+  workout.stepIndex--;
+  renderTrainingStep();
+}
+
+function toggleExerciseTimer(){
+  if(workout.exerciseTimerRunning) stopExerciseCountdown();
+  else startExerciseCountdown();
+}
+
+function startExerciseCountdown(){
+  if(workout.exerciseTimerRunning || workout.paused) return;
+  workout.exerciseTimerRunning = true;
+  document.getElementById('timerStartBtn').textContent='Pause timer';
+  exerciseTimerInterval = setInterval(()=>{
+    if(workout.paused) return;
+    workout.currentCountdown -= 1;
+    updateCountdownDisplay();
+
+    const step = workout.steps[workout.stepIndex];
+    if(step?.kind==='rest' && settings.restWarning && workout.currentCountdown===10 && !workout.warningSpoken){
+      workout.warningSpoken=true; speak('Ten seconds remaining.');
+    }
+
+    if(workout.currentCountdown<=0){
+      stopExerciseCountdown();
+      vibrateCue([80,60,80]);
+      if(step?.kind==='rest'){
+        speak('Rest complete.');
+        setTimeout(nextTrainingStep,500);
+      } else {
+        speak('Done.');
+        if(settings.autoAdvance) setTimeout(nextTrainingStep,800);
+      }
+    }
+  },1000);
+}
+
+function stopExerciseCountdown(){
+  if(exerciseTimerInterval) clearInterval(exerciseTimerInterval);
+  exerciseTimerInterval=null;
+  if(workout) workout.exerciseTimerRunning=false;
+  const b=document.getElementById('timerStartBtn');
+  if(b) b.textContent='Start timer';
+}
+
+function updateCountdownDisplay(){
+  const s = Math.max(0, workout.currentCountdown||0);
+  document.getElementById('exerciseCountdown').textContent = formatTime(s);
+}
+
+function toggleWorkoutPause(){
+  if(!workout) return;
+  workout.paused = !workout.paused;
+  const btn = document.getElementById('pauseWorkoutBtn');
+  if(workout.paused){
+    workout.pausedAt = Date.now();
+    btn.textContent='Resume';
+    window.speechSynthesis?.cancel();
+  }else{
+    if(workout.pausedAt) workout.totalPausedMs += Date.now()-workout.pausedAt;
+    workout.pausedAt=null;
+    btn.textContent='Pause';
+    const step=workout.steps[workout.stepIndex];
+    if(step?.kind==='rest' && !workout.exerciseTimerRunning) startExerciseCountdown();
+  }
+}
+
+function updateTotalTimer(){
+  if(!workout) return;
+  const now = workout.paused && workout.pausedAt ? workout.pausedAt : Date.now();
+  const secs = Math.max(0, Math.floor((now-workout.startedAt-workout.totalPausedMs)/1000));
+  document.getElementById('totalTimer').textContent = formatTime(secs);
+}
+
+function finishWorkout(){
+  clearTrainingTimers();
+  const now=Date.now();
+  const pausedExtra = workout.paused && workout.pausedAt ? now-workout.pausedAt : 0;
+  const durationSec = Math.max(1, Math.floor((now-workout.startedAt-workout.totalPausedMs-pausedExtra)/1000));
+
+  historyData.unshift({
+    id:'h_'+now,
+    date:new Date().toISOString(),
+    sessionName:workout.session.name,
+    durationSec,
+    sets:workout.session.sets,
+    exerciseCount:workout.session.exercises.length,
+    weightKg:settings.bodyWeight,
+    intensity:settings.workoutIntensity,
+    calories:estimateCalories(durationSec, settings.bodyWeight, settings.workoutIntensity)
+  });
+  historyData = historyData.slice(0,200);
+  saveHistory();
+  vibrateCue([100,70,100,70,160]);
+
+  const card = document.querySelector('.training-card');
+  card.innerHTML = `
+    <div class="eyebrow">Workout complete</div>
+    <h2>Great work</h2>
+    <div class="target">${formatTime(durationSec)}</div>
+    <div class="grid three" style="margin-top:18px">
+      <div class="summary-stat">Sets<b>${workout.session.sets}</b></div>
+      <div class="summary-stat">Exercises<b>${workout.session.exercises.length}</b></div>
+      <div class="summary-stat">Calories<b>~${estimateCalories(durationSec, settings.bodyWeight, settings.workoutIntensity)} kcal</b></div>
+    </div>
+    <p class="description" style="margin-top:18px">${escapeHtml(workout.session.name)} has been added to your training history.</p>
+    <button class="btn block" style="margin-top:20px" onclick="closeWorkout()">Done</button>`;
+  document.querySelector('.training-actions').classList.add('hidden');
+  document.getElementById('trainingProgress').style.width='100%';
+  speak('Workout complete.');
+}
+
+function closeWorkout(){
+  clearTrainingTimers();
+  releaseWorkoutWakeLock();
+  document.getElementById('trainingOverlay').classList.remove('active');
+  document.body.style.overflow='';
+  document.querySelector('.training-actions').classList.remove('hidden');
+  document.querySelector('.training-card').innerHTML = `
+      <div class="eyebrow" id="trainingEyebrow">Exercise</div>
+      <h2 id="trainingExerciseName">Push-ups</h2>
+      <div id="trainingTarget" class="target">10 reps</div>
+      <div id="countdownWrap" class="hidden">
+        <div id="exerciseCountdown" class="countdown">00:30</div>
+        <button class="btn secondary" id="timerStartBtn" onclick="toggleExerciseTimer()">Start timer</button>
+      </div>
+      <p id="trainingDescription" class="description"></p>
+      <div id="nextUp" class="pill" style="margin-top:18px"></div>`;
+  workout=null;
+  showPage('train');
+}
+
+function confirmExitWorkout(){
+  if(confirm('Exit this workout? Progress from this unfinished workout will not be saved.')) closeWorkout();
+}
+
+function clearTrainingTimers(){
+  if(totalTimerInterval) clearInterval(totalTimerInterval);
+  if(exerciseTimerInterval) clearInterval(exerciseTimerInterval);
+  totalTimerInterval=null; exerciseTimerInterval=null;
+  window.speechSynthesis?.cancel();
+}
+
+function renderHistory(){
+  const total = historyData.length;
+  const totalSec = historyData.reduce((a,b)=>a+(b.durationSec||0),0);
+  const totalCalories = historyData.reduce((a,b)=>a+historyCalories(b),0);
+  const weekCount = countThisWeek();
+  document.getElementById('historyStats').innerHTML = `
+    <div class="summary-stat">Total workouts<b>${total}</b></div>
+    <div class="summary-stat">This week<b>${weekCount}</b></div>
+    <div class="summary-stat">Training time<b>${Math.round(totalSec/60)} min</b></div>
+    <div class="summary-stat">Calories<b>~${totalCalories} kcal</b></div>`;
+
+  document.getElementById('historyList').innerHTML = historyData.length ? historyData.map(h=>{
+    const d=new Date(h.date);
+    return `<div class="history-row" style="align-items:center">
+      <div style="flex:1">
+        <b>${escapeHtml(h.sessionName)}</b>
+        <div class="muted" style="font-size:.8rem">
+          ${d.toLocaleDateString(undefined,{day:'numeric',month:'short',year:'numeric'})}
+          · ${h.sets} set${h.sets>1?'s':''}
+          · ${formatTime(h.durationSec)}
+          · ~${historyCalories(h)} kcal
+        </div>
+      </div>
+      <div class="row">
+        <button class="btn secondary small" onclick="editHistoryEntry('${h.id}')">Edit</button>
+        <button class="btn danger small" onclick="deleteHistoryEntry('${h.id}')">Delete</button>
+      </div>
+    </div>`;
+  }).join('') : '<div class="empty">No completed workouts yet.</div>';
+}
+
+function editHistoryEntry(id){
+  const h = historyData.find(x=>x.id===id);
+  if(!h) return;
+
+  const name = prompt('Session name:', h.sessionName);
+  if(name===null) return;
+
+  const durationMin = prompt('Duration in minutes:', Math.max(1, Math.round((h.durationSec||60)/60)));
+  if(durationMin===null) return;
+
+  const sets = prompt('Number of sets:', h.sets || 1);
+  if(sets===null) return;
+
+  const calories = prompt('Estimated calories (you can override the estimate):', historyCalories(h));
+  if(calories===null) return;
+
+  h.sessionName = name.trim() || h.sessionName;
+  h.durationSec = Math.max(60, Math.round((Number(durationMin)||1)*60));
+  h.sets = Math.max(1, Math.round(Number(sets)||1));
+  h.calories = Math.max(1, Math.round(Number(calories)||historyCalories(h)));
+  saveHistory();
+}
+
+function deleteHistoryEntry(id){
+  const h = historyData.find(x=>x.id===id);
+  if(!h) return;
+  if(confirm(`Delete "${h.sessionName}" from history?`)){
+    historyData = historyData.filter(x=>x.id!==id);
+    saveHistory();
+  }
+}
+
+function clearHistory(){
+  if(historyData.length && confirm('Clear all training history?')){
+    historyData=[]; saveHistory();
+  }
+}
+function countThisWeek(){
+  const now=new Date();
+  const day=(now.getDay()+6)%7;
+  const monday=new Date(now);
+  monday.setHours(0,0,0,0);
+  monday.setDate(now.getDate()-day);
+  return historyData.filter(h=>new Date(h.date)>=monday).length;
+}
+function updateWeeklyCount(){
+  const n=countThisWeek();
+  document.getElementById('weeklyCount').textContent = `${n} workout${n===1?'':'s'} this week`;
+}
+
+
+
+function resolvedTheme(){
+  if(settings.appearanceMode === 'dark') return 'dark';
+  if(settings.appearanceMode === 'light') return 'light';
+  return window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+}
+
+function applyTheme(){
+  const theme = resolvedTheme();
+  document.documentElement.setAttribute('data-theme', theme);
+  const meta = document.getElementById('themeColorMeta');
+  if(meta) meta.setAttribute('content', theme === 'dark' ? '#101419' : '#1f6f5f');
+}
+
+if(window.matchMedia){
+  const themeMedia = window.matchMedia('(prefers-color-scheme: dark)');
+  if(themeMedia.addEventListener){
+    themeMedia.addEventListener('change', ()=>{ if(settings.appearanceMode === 'system') applyTheme(); });
+  }
+}
+
+
+function updateMusicModeUI(){
+  const note = document.getElementById('musicModeNote');
+  const voice = document.getElementById('voiceEnabled');
+  const music = document.getElementById('musicMode');
+  if(note) note.classList.toggle('hidden', !music?.checked);
+  if(voice) voice.disabled = !!music?.checked;
+}
+
+function vibrateCue(pattern=60){
+  if(!settings.vibrationCues || !('vibrate' in navigator)) return;
+  try { navigator.vibrate(pattern); } catch(e) {}
+}
+
+function populateVoices(){
+  if(!('speechSynthesis' in window)) return;
+  availableVoices = speechSynthesis.getVoices();
+  const sel=document.getElementById('voiceSelect');
+  if(!sel) return;
+  const english = availableVoices.filter(v=>/^en/i.test(v.lang));
+  const list = english.length ? english : availableVoices;
+  sel.innerHTML = list.map(v=>`<option value="${escapeAttr(v.name)}">${escapeHtml(v.name)} (${escapeHtml(v.lang)})</option>`).join('');
+  if(settings.voiceName && list.some(v=>v.name===settings.voiceName)) sel.value=settings.voiceName;
+  else if(list.length){ sel.value=list[0].name; settings.voiceName=list[0].name; }
+}
+function speak(text){
+  if(settings.musicMode) return;
+  if(!settings.voiceEnabled || !('speechSynthesis' in window) || !text) return;
+  speechSynthesis.cancel();
+  const u=new SpeechSynthesisUtterance(text);
+  const v=availableVoices.find(x=>x.name===settings.voiceName);
+  if(v) u.voice=v;
+  u.rate=Number(settings.voiceRate)||1;
+  speechSynthesis.speak(u);
+}
+function speakExercise(ex,value,sideLabel=''){
+  let t='';
+  const unit = ex.type==='seconds' ? 'seconds' : 'repetitions';
+  const sideText = sideLabel ? `${sideLabel.toLowerCase()} side. ` : '';
+  if(settings.voiceDetail==='minimal') t=`${ex.name}. ${sideText}${value}.`;
+  else if(settings.voiceDetail==='coaching') t=`${ex.name}. ${sideText}${value} ${unit}. ${ex.cue}`;
+  else t=`${ex.name}. ${sideText}${value} ${unit}.`;
+  speak(t);
+}
+function testVoice(){
+  if(settings.musicMode){
+    alert('Music Mode is active. Turn it off to test voice guidance.');
+    return;
+  }
+  speak('Push-ups. Ten repetitions. Voice guidance is ready.');
+}
+
+function loadSettingsUI(){
+  document.getElementById('voiceEnabled').checked=settings.voiceEnabled;
+  document.getElementById('voiceRate').value=String(settings.voiceRate);
+  document.getElementById('voiceDetail').value=settings.voiceDetail;
+  document.getElementById('autoTimed').checked=settings.autoTimed;
+  document.getElementById('autoAdvance').checked=settings.autoAdvance;
+  document.getElementById('restWarning').checked=settings.restWarning;
+  document.getElementById('bodyWeight').value=settings.bodyWeight;
+  document.getElementById('workoutIntensity').value=settings.workoutIntensity;
+  document.getElementById('musicMode').checked=!!settings.musicMode;
+  document.getElementById('vibrationCues').checked=!!settings.vibrationCues;
+  document.getElementById('appearanceMode').value=settings.appearanceMode || 'system';
+  document.getElementById('keepScreenAwake').checked=!!settings.keepScreenAwake;
+  updateMusicModeUI();
+  applyTheme();
+}
+
+
+function intensityMet(level){
+  if(level==='light') return 3.8;
+  if(level==='vigorous') return 8.0;
+  return 6.0;
+}
+function estimateCalories(durationSec, weightKg=settings.bodyWeight, intensity=settings.workoutIntensity){
+  const mins = Math.max(0, Number(durationSec)||0) / 60;
+  const kg = Math.max(35, Number(weightKg)||80);
+  const met = intensityMet(intensity);
+  return Math.max(1, Math.round((met * 3.5 * kg / 200) * mins));
+}
+function historyCalories(h){
+  if(Number.isFinite(Number(h.calories)) && Number(h.calories)>0) return Math.round(Number(h.calories));
+  return estimateCalories(h.durationSec, h.weightKg || settings.bodyWeight, h.intensity || settings.workoutIntensity);
+}
+
+
+function exportBackup(){
+  const backup = {
+    app:'Calisthenics Trainer',
+    backupVersion:1,
+    exportedAt:new Date().toISOString(),
+    sessions,
+    history:historyData,
+    settings
+  };
+  const blob = new Blob([JSON.stringify(backup,null,2)], {type:'application/json'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  const stamp = new Date().toISOString().slice(0,10);
+  a.href = url;
+  a.download = `calisthenics-trainer-backup-${stamp}.json`;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  setTimeout(()=>URL.revokeObjectURL(url),1000);
+}
+
+async function importBackupFile(file){
+  if(!file) return;
+  try{
+    const text = await file.text();
+    const data = JSON.parse(text);
+    if(!data || !Array.isArray(data.sessions) || !Array.isArray(data.history) || typeof data.settings !== 'object'){
+      throw new Error('This file is not a valid Calisthenics Trainer backup.');
+    }
+    if(!confirm(`Import this backup?\n\nSessions: ${data.sessions.length}\nHistory entries: ${data.history.length}\n\nThis will replace the data currently stored on this device.`)) return;
+
+    sessions = data.sessions;
+    historyData = data.history;
+    settings = {...defaultSettings(), ...data.settings};
+
+    localStorage.setItem(LS.sessions, JSON.stringify(sessions));
+    localStorage.setItem(LS.history, JSON.stringify(historyData));
+    localStorage.setItem(LS.settings, JSON.stringify(settings));
+    touchLocalState();
+
+    loadSettingsUI();
+    renderSessions();
+    renderHistory();
+    renderProgression();
+    updateWeeklyCount();
+    alert('Backup imported successfully.');
+  }catch(err){
+    alert(err?.message || 'Could not import this backup.');
+  }
+}
+
+
+function getExercise(id){ return EXERCISES.find(x=>x.id===id); }
+function formatTime(total){
+  total=Math.max(0,Number(total)||0);
+  const m=Math.floor(total/60), s=Math.floor(total%60);
+  return String(m).padStart(2,'0')+':'+String(s).padStart(2,'0');
+}
+function escapeHtml(s=''){
+  return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]));
+}
+function escapeAttr(s=''){ return escapeHtml(s).replace(/`/g,'&#096;'); }
+
+function seedDefaultSessions(){
+  if(sessions.length) return;
+  sessions = [
+    {
+      id:'default_upper',name:'Upper Body + Core',sets:2,setRest:45,exerciseRest:0,
+      exercises:[
+        {exerciseId:'pushups',value:8},
+        {exerciseId:'pike_pushups',value:6},
+        {exerciseId:'scapular_pushups',value:10},
+        {exerciseId:'side_plank',value:20}
+      ]
+    },
+    {
+      id:'default_legs',name:'Legs + Core',sets:2,setRest:45,exerciseRest:0,
+      exercises:[
+        {exerciseId:'squats',value:12},
+        {exerciseId:'reverse_lunges',value:6},
+        {exerciseId:'glute_bridges',value:12},
+        {exerciseId:'dead_bug',value:8},
+        {exerciseId:'plank',value:25}
+      ]
+    },
+    {
+      id:'default_full',name:'Full Body',sets:2,setRest:45,exerciseRest:0,
+      exercises:[
+        {exerciseId:'pushups',value:8},
+        {exerciseId:'squats',value:12},
+        {exerciseId:'mountain_climbers',value:20},
+        {exerciseId:'glute_bridges',value:12},
+        {exerciseId:'bear_plank',value:20}
+      ]
+    }
+  ];
+  saveSessions();
+}
+
+window.addEventListener('load',()=>{
+  seedDefaultSessions();
+  renderSessions();
+  renderProgression();
+  renderExerciseLibrary();
+  renderHistory();
+  updateWeeklyCount();
+  loadSettingsUI();
+  populateVoices();
+  if('speechSynthesis' in window) speechSynthesis.onvoiceschanged=populateVoices;
+});
+</script>
+
+<script>
+let deferredInstallPrompt = null;
+
+function isStandaloneMode(){
+  return window.matchMedia('(display-mode: standalone)').matches ||
+         window.navigator.standalone === true;
+}
+
+window.addEventListener('beforeinstallprompt', (event) => {
+  event.preventDefault();
+  deferredInstallPrompt = event;
+  const card = document.getElementById('installCard');
+  if(card && !isStandaloneMode()) card.classList.remove('hidden');
+});
+
+window.addEventListener('appinstalled', () => {
+  deferredInstallPrompt = null;
+  const card = document.getElementById('installCard');
+  if(card) card.classList.add('hidden');
+});
+
+async function installPWA(){
+  if(!deferredInstallPrompt){
+    alert('Installation is not currently offered by this browser. Make sure you opened the HTTPS Netlify URL in Chrome, not a local file.');
+    return;
+  }
+  deferredInstallPrompt.prompt();
+  await deferredInstallPrompt.userChoice;
+  deferredInstallPrompt = null;
+  const card = document.getElementById('installCard');
+  if(card) card.classList.add('hidden');
+}
+
+if('serviceWorker' in navigator){
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('./service-worker.js').catch(err => {
+      console.warn('Service worker registration failed:', err);
+    });
+  });
+}
+</script>
+
+<script type="module" src="./firebase-cloud.js"></script>
+</body>
+</html>

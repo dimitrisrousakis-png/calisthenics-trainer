@@ -1,0 +1,172 @@
+CALISTHENICS TRAINER v6
+GITHUB PAGES + FIREBASE CLOUD SYNC SETUP
+
+WHAT THIS VERSION DOES
+- GitHub Pages hosts the PWA/frontend.
+- Firebase Authentication provides optional email/password login.
+- Cloud Firestore synchronizes sessions, workout history and settings.
+- A manual Cloud Backup / Restore Backup function is included.
+- localStorage remains the primary offline fallback.
+- If Firebase is unavailable or you are signed out, the app still works locally.
+
+============================================================
+1. CREATE / OPEN A FIREBASE PROJECT
+============================================================
+Open Firebase Console and create a project (or use an existing one).
+
+In Project settings -> General -> Your apps:
+- Add a Web app.
+- Firebase will show a firebaseConfig object.
+
+Open:
+  firebase-config.js
+
+Replace the placeholder values with the values from your Firebase web app.
+
+Example structure:
+  apiKey
+  authDomain
+  projectId
+  storageBucket
+  messagingSenderId
+  appId
+
+Do not change the property names.
+
+============================================================
+2. CREATE CLOUD FIRESTORE
+============================================================
+In Firebase Console:
+Build / Firestore Database -> Create database.
+
+Use Firestore Standard edition.
+
+After the database exists, open Firestore -> Rules and replace the rules
+with the contents of:
+  firestore.rules
+
+Then publish the rules.
+
+The included rule means an authenticated user can read/write only data
+under:
+  /users/<their own Firebase uid>/...
+
+============================================================
+3. ENABLE EMAIL/PASSWORD LOGIN
+============================================================
+Firebase Console:
+Authentication -> Sign-in method -> Email/Password -> Enable.
+
+============================================================
+4. AUTHORIZE YOUR GITHUB PAGES DOMAIN
+============================================================
+Firebase Console:
+Authentication -> Settings -> Authorized domains.
+
+Add your GitHub Pages host, for example:
+  yourusername.github.io
+
+If you later use a custom domain, add that domain too.
+
+============================================================
+5. PUBLISH TO GITHUB PAGES
+============================================================
+Create a GitHub repository, for example:
+  calisthenics-trainer
+
+Upload ALL files/folders from this package to the repository root.
+
+Important files include:
+  index.html
+  manifest.webmanifest
+  service-worker.js
+  firebase-config.js
+  firebase-cloud.js
+  firestore.rules
+  icons/
+  .nojekyll
+
+In GitHub:
+Repository -> Settings -> Pages
+
+Choose:
+  Deploy from a branch
+  Branch: main
+  Folder: / (root)
+
+GitHub will show your Pages URL after deployment.
+
+============================================================
+6. FIRST USE
+============================================================
+Open the GitHub Pages HTTPS URL.
+
+The app works immediately in local-only mode.
+
+To turn on cloud sync:
+Settings -> Cloud Sync
+- Create Account
+or
+- Sign In
+
+On first sign-in:
+- Existing local sessions and history are merged with cloud data.
+- The merged copy is saved locally and to Firebase.
+
+Afterward:
+- Local changes are saved immediately to localStorage.
+- When online and signed in, changes are automatically synchronized.
+- If offline, keep using the app normally; it syncs after reconnection.
+
+============================================================
+7. CLOUD BACKUP
+============================================================
+Settings -> Cloud Sync -> Cloud Backup
+
+This creates a separate latest backup snapshot in Firebase.
+
+Restore Backup restores that snapshot and synchronizes it back to the
+current cloud state.
+
+JSON Export/Import remains available as an additional independent backup.
+
+============================================================
+DATA STORAGE
+============================================================
+Local browser/PWA:
+  ct_sessions_v1
+  ct_history_v1
+  ct_settings_v1
+  ct_cloud_meta_v1
+
+Cloud Firestore:
+  users/{uid}/sync/state
+  users/{uid}/backups/latest
+
+============================================================
+IMPORTANT
+============================================================
+Firebase web configuration identifies your Firebase project/app. The
+security boundary is Firebase Authentication + Firestore Security Rules.
+Do not publish permissive Firestore rules such as allowing everyone to
+read/write your database.
+
+
+============================================================
+VERSION 7 — LOGIN GATE
+============================================================
+The published GitHub Pages URL is technically public, but the trainer interface
+is covered by a full-screen login gate until Firebase Authentication confirms a
+signed-in user.
+
+BEHAVIOR
+- Signed out: only Sign In / Create Account / Reset Password is visible.
+- Signed in: the trainer interface unlocks.
+- Sign Out: the trainer locks immediately.
+- Firebase browser persistence is enabled, so a signed-in account normally stays
+  signed in after closing and reopening the installed PWA.
+
+SECURITY DISTINCTION
+The login gate controls normal app access. The actual protection of private
+workout data comes from Firebase Authentication and the included Firestore
+Security Rules. GitHub Pages source files remain public static assets.
