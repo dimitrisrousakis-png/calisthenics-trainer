@@ -1,15 +1,10 @@
-// Firebase web configuration for Calisthenics Trainer.
-// Replace the placeholder values below with the firebaseConfig object
-// shown in Firebase Console -> Project settings -> Your apps -> Web app.
-//
-// Firebase web config values identify your Firebase project/app; access
-// control is enforced by Firebase Authentication + Firestore Security Rules.
+// Firebase configuration for Calisthenics Trainer
 
 export default {
-  apiKey: "YOUR_FIREBASE_API_KEY",
-  authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
-  projectId: "YOUR_PROJECT_ID",
-  storageBucket: "YOUR_PROJECT_ID.firebasestorage.app",
-  messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
-  appId: "YOUR_FIREBASE_APP_ID"
+  apiKey: "AIzaSyDjebSa8N6ay-xE6y74QHL5mG5dk_s7TNo",
+  authDomain: "calisthenics-trainer-b191b.firebaseapp.com",
+  projectId: "calisthenics-trainer-b191b",
+  storageBucket: "calisthenics-trainer-b191b.firebasestorage.app",
+  messagingSenderId: "760411202225",
+  appId: "1:760411202225:web:e67abfce6f36b10df27890"
 };
