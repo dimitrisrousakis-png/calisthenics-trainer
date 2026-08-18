@@ -1036,7 +1036,7 @@ function cloudSetMessage(message='', tone='normal'){
   el.style.color = tone === 'error' ? 'var(--danger)' : '';
 }
 
-function setCloudUIState(state={}){
+function renderCloudUIState(state={}){
   const configured = !!state.configured;
   const signedIn = !!state.signedIn;
   const email = state.email || '';
@@ -1072,7 +1072,7 @@ function setCloudUIState(state={}){
   if(state.message) cloudSetMessage(state.message, state.error ? 'error' : 'normal');
 }
 window.setCloudUIState = function(state={}){
-  setCloudUIState(state);
+  renderCloudUIState(state);
   setLoginGateState(state);
 };
 setLoginGateState({
@@ -2007,6 +2007,6 @@ if('serviceWorker' in navigator){
 }
 </script>
 
-<script type="module" src="./firebase-cloud.js?v=9"></script>
+<script type="module" src="./firebase-cloud.js?v=10"></script>
 </body>
 </html>
