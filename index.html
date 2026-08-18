@@ -268,6 +268,7 @@ html[data-theme="dark"] .pill.accent{background:var(--accent-soft);color:#8ee0ca
     </div>
 
     <div id="gateStatus" class="gate-status">Checking sign-in status…</div>
+    <div class="muted" style="font-size:.68rem;margin-top:4px">Build v11</div>
 
     <div class="gate-security">
       The website address is public, but the trainer interface is locked until Firebase confirms a signed-in account. Workout data remains protected by Firebase Authentication and Firestore Security Rules.
@@ -1036,12 +1037,15 @@ function cloudSetMessage(message='', tone='normal'){
   el.style.color = tone === 'error' ? 'var(--danger)' : '';
 }
 
-function renderCloudUIState(state={}){
+window.__trainerBuild = 'v11';
+
+window.setCloudUIState = function(state={}){
   const configured = !!state.configured;
   const signedIn = !!state.signedIn;
   const email = state.email || '';
   const status = state.status || (signedIn ? 'Cloud enabled' : 'Local only');
 
+  // Settings -> Cloud Sync UI
   const notConfigured = document.getElementById('firebaseNotConfigured');
   const signedOutBox = document.getElementById('cloudSignedOut');
   const signedInBox = document.getElementById('cloudSignedIn');
@@ -1058,10 +1062,12 @@ function renderCloudUIState(state={}){
     pill.textContent = signedIn ? `☁ ${status}` : (configured ? '☁ Local only' : '☁ Setup needed');
     pill.classList.toggle('accent', signedIn);
   }
+
   if(cardPill){
     cardPill.textContent = signedIn ? status : (configured ? 'Local only' : 'Setup needed');
     cardPill.classList.toggle('accent', signedIn);
   }
+
   if(emailEl && signedIn) emailEl.textContent = email || 'Signed in';
 
   if(syncEl){
@@ -1070,12 +1076,28 @@ function renderCloudUIState(state={}){
   }
 
   if(state.message) cloudSetMessage(state.message, state.error ? 'error' : 'normal');
-}
-window.setCloudUIState = function(state={}){
-  renderCloudUIState(state);
-  setLoginGateState(state);
+
+  // Login gate UI — deliberately handled inline to avoid any recursion path.
+  const gate = document.getElementById('loginGate');
+  const setup = document.getElementById('gateSetupNotice');
+
+  if(setup) setup.classList.toggle('hidden', configured);
+
+  if(gate){
+    gate.classList.toggle('hidden', signedIn);
+
+    if(!configured){
+      gateSetStatus('Firebase setup is required before the trainer can be unlocked.', true);
+    }else if(signedIn){
+      gateSetStatus('');
+    }else if(state.status === 'Offline'){
+      gateSetStatus('You are offline. Firebase must confirm the saved account session before the trainer can unlock.', true);
+    }else{
+      gateSetStatus(state.message || 'Enter your account details to continue.', !!state.error);
+    }
+  }
 };
-setLoginGateState({
+window.setCloudUIState({
   configured:true,
   signedIn:false,
   status:'Loading…',
@@ -1084,7 +1106,7 @@ setLoginGateState({
 
 setTimeout(()=>{
   if(!window.__firebaseRuntimeReady){
-    setLoginGateState({
+    window.setCloudUIState({
       configured:true,
       signedIn:false,
       status:'Connection issue',
@@ -2007,6 +2029,6 @@ if('serviceWorker' in navigator){
 }
 </script>
 
-<script type="module" src="./firebase-cloud.js?v=10"></script>
+<script type="module" src="./firebase-cloud.js?v=11"></script>
 </body>
 </html>
