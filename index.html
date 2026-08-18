@@ -1075,7 +1075,24 @@ window.setCloudUIState = function(state={}){
   setCloudUIState(state);
   setLoginGateState(state);
 };
-setLoginGateState({configured:false,signedIn:false,status:'Loading…',message:'Checking Firebase configuration…'});
+setLoginGateState({
+  configured:true,
+  signedIn:false,
+  status:'Loading…',
+  message:'Connecting securely to Firebase…'
+});
+
+setTimeout(()=>{
+  if(!window.__firebaseRuntimeReady){
+    setLoginGateState({
+      configured:true,
+      signedIn:false,
+      status:'Connection issue',
+      message:'Firebase is taking longer than expected to load. Check your internet connection and reload the page.',
+      error:true
+    });
+  }
+}, 10000);
 
 function cloudCredentials(){
   return {
@@ -1990,6 +2007,6 @@ if('serviceWorker' in navigator){
 }
 </script>
 
-<script type="module" src="./firebase-cloud.js?v=8"></script>
+<script type="module" src="./firebase-cloud.js?v=9"></script>
 </body>
 </html>
